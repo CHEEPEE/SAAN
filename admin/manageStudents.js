@@ -153,7 +153,7 @@ class ManageStudents extends React.Component {
           <button
             type="button"
             onClick={this.changeInserStudentState.bind(this)}
-            className="btn btn-primary"
+            className="btn btn-info"
           >
             Add Students
           </button>
@@ -295,7 +295,7 @@ class ManageStudents extends React.Component {
 
           <button
             type="button"
-            className="w-100 ml-3 mr-3 btn btn-primary"
+            className="w-100 ml-3 mr-3 btn btn-info"
             onClick={this.insertStudent.bind(this)}
           >
             Insert Student Information
@@ -413,6 +413,12 @@ class StudentItem extends React.Component {
                 {this.props.parent_email}
                 </div>
               </div>
+            </div>
+            <div className = "row border-top mt-3 p-3 d-flex flex-row-reverse">
+            <div>
+            <button type="button" class="btn btn-info mr-3">Update</button>
+            <button type="button" class="btn btn-danger">Remove</button>
+            </div>
             </div>
           </div>
         </div>

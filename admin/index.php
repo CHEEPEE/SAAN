@@ -56,7 +56,7 @@
       <div class="mt-3 font-weight-bold nav-link active" id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home" role="tab" aria-controls="v-pills-home" aria-selected="true" onClick = "manageDepartmentRoot()">Manage Department</div>
       <div class="mt-3 font-weight-bold nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="false" onClick = "manageAccoutRoot()">Manage Accounts</div>
       <div class="mt-3 font-weight-bold nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false" onClick = "manageStudents()">Manage Students</div>
-      <div class="mt-3 font-weight-bold nav-link" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false">Manage Teachers</div>
+      <div class="mt-3 font-weight-bold nav-link" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false" onClick = "manageTeachers()">Manage Teachers</div>
     </div>
     </div>
     <div class = "col-sm-10 bg-light p-5">
@@ -71,4 +71,5 @@
 <script type="text/babel" src="managedepartment.js"></script>
 <script type="text/babel" src="manageAccounts.js"></script>
 <script type="text/babel" src="manageStudents.js"></script>
+<script type="text/babel" src="manageTeachers.js"></script>
 </html>

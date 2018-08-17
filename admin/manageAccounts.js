@@ -9,6 +9,7 @@ class ManageAccout extends React.Component {
       addAccountContainer: "d-none"
     };
   }
+  
   chooseDepartment() {
     $.ajax({
       type: "Post",
@@ -28,6 +29,7 @@ class ManageAccout extends React.Component {
       }
     });
   }
+
   getSecretaryAccounts() {
     $.ajax({
       type: "Post",
@@ -47,6 +49,7 @@ class ManageAccout extends React.Component {
       }
     });
   }
+
   componentDidMount() {
     this.chooseDepartment();
     this.getSecretaryAccounts();
