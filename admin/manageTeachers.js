@@ -174,7 +174,56 @@ class TeacherItem extends React.Component {
         extend: this.state.extend == "d-none" ? "visible" : "d-none"
       });
     }
+    fetchSubjects(){
+      let sup = this;
+      $.ajax({
+        type: "Post",
+        url: "teachers/fetchSubject.php",
+        success: function(data) {
+          console.log(data);
+          var listItem = JSON.parse(data).map(function(object, index) {
+            return (
+              <SubjectItem
+                key={object.subject_id}
+                id = {object.subject_id}
+                subject_code={object.subject_code}
+                subject_des={object.subject_des}
+              />
+            );
+          });
+          ReactDOM.render(
+            <React.Fragment>{listItem}</React.Fragment>,
+            document.getElementById("subjectsContainer"+sup.props.teacher_id)
+          );
+          
+        }
+      });
+    }
+    addSubject(){
+      let sup = this;
+      let subject_code = $("#subject_code"+this.props.id).val();
+      let subject_des = $("#sub_des"+this.props.id).val();
+      let teacher_id = this.props.id;
+      $.ajax({
+        url: "teachers/addSubject.php",
+        method: "POST",
+        data: {
+          subject_code: subject_code,
+          subject_des: subject_des,
+          teacher_id:teacher_id
+        },
+        success: function(data) {
+          console.log(data);
+          $("#sub_des"+sup.props.id).val("");
+          $("#subject_code"+sup.props.id).val("");
+          sup.fetchSubjects();
+        }
+      });
 
+    }
+    componentDidMount(){
+      this.fetchSubjects();
+    }
     render() {
       return (
         <React.Fragment>
@@ -183,16 +232,18 @@ class TeacherItem extends React.Component {
             className="mt-2 list-group-item list-group-item-action border-0 bg-light"
           >
             <div className="row p-3">
-             <div cassName = "col text-capitalize font-weight-bold">
+             <div className = "col text-capitalize font-weight-bold">
               {this.props.teacher_name}
              </div>
             </div>
           </div>
+          {/* start add course form */}
           <div className = {"row p-3 "+this.state.teacherExtend}>
           <div className = "col-sm-2">
             <div className="form-group w-100">
                     <input
                       type="text"
+                      id = {"subject_code"+this.props.id}
                       className="form-control"
                       aria-describedby="emailHelp"
                       placeholder="Course Code"
@@ -203,6 +254,7 @@ class TeacherItem extends React.Component {
             <div className="form-group w-100">
                     <input
                       type="text"
+                      id = {"sub_des"+this.props.id}
                       className="form-control"
                       aria-describedby="emailHelp"
                       placeholder="Course Desciption"
@@ -214,16 +266,50 @@ class TeacherItem extends React.Component {
             <button
                 type="button"
                 className="btn btn-info"
+                onClick = {this.addSubject.bind(this)}
               >
                 Save Subject
               </button>
             </div>
            
-            <div className = "col-sm-12" id = {"courseListContainer"+this.props.teacher_id}>
-
+            <div className = "col-sm-12">
+              <div className = "row" id = {"subjectsContainer"+this.props.teacher_id}>
+              
+              </div>
             </div>
           </div>
+         {/* end add course form
+          ------ start course list -------
+          */}
+
+        
+
         </React.Fragment>
       );
     }
   }
+
+  class SubjectItem extends React.Component {
+    state = {  }
+    render() { 
+      return ( 
+     <div className = "col-sm-12 mt-2 m-1 list-group-item bg-light list-group-item-action border-0">
+      <div  className="row">
+        <div className = "col">
+        <small className = "text-info">Subject Code : </small>
+        {this.props.subject_code}
+        </div>
+        <div className = "col">
+        <small className = "text-info">Subject Des : </small>
+        {this.props.subject_des}
+        </div>
+        <div className = "col d-flex flex-row-reverse">
+        Update Delete
+        </div>
+      </div>
+     </div>
+      );
+    }
+  }
+   
+
