@@ -1,6 +1,7 @@
 <?php
 include '../Database.php';
-$sql = "select * from subjects";
+$teacher_id = mysqli_real_escape_string($connect,$_POST["teacher_id"]);
+$sql = "select * from subjects where teacher_id = $teacher_id ";
 $result = $connect->query($sql);
 $arrayData = array();
 class myObject

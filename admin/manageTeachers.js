@@ -179,6 +179,7 @@ class TeacherItem extends React.Component {
       $.ajax({
         type: "Post",
         url: "teachers/fetchSubject.php",
+        data:{teacher_id:sup.props.id},
         success: function(data) {
           console.log(data);
           var listItem = JSON.parse(data).map(function(object, index) {
@@ -193,7 +194,7 @@ class TeacherItem extends React.Component {
           });
           ReactDOM.render(
             <React.Fragment>{listItem}</React.Fragment>,
-            document.getElementById("subjectsContainer"+sup.props.teacher_id)
+            document.getElementById("subjectsContainer"+sup.props.id)
           );
           
         }
@@ -273,7 +274,7 @@ class TeacherItem extends React.Component {
             </div>
            
             <div className = "col-sm-12">
-              <div className = "row" id = {"subjectsContainer"+this.props.teacher_id}>
+              <div className = "row" id = {"subjectsContainer"+this.props.id}>
               
               </div>
             </div>
