@@ -50,6 +50,10 @@
 				}
 				else if($row['account_type']=="dept_sec"){
 					header("location:../secretary/");
+					$_SESSION["accout_id"] = $row['userid'];
+					$_SESSION["account_name"] = $row['account_name'];
+					$_SESSION["account_type"] = $row['account_type'];
+					$_SESSION["dept_id"] = $row['department_id'];
 				}
 			}
 		}else {
