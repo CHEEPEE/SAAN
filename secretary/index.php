@@ -52,12 +52,12 @@
     </form>
   </div>
 </nav>
-    <div class = "row mt-5 pt-5 pl-3">
+    <div class = "row h-100 mt-4 pt-5 pl-3">
        
-    <div class = "col-sm-4 bg-white" id = "sideNavRoot">
+    <div class = "col-sm-4 h-100 pt-3 bg-white" id = "sideNavRoot">
        
     </div>
-    <div class = "col-sm-8" id = "mainContainerRoot">
+    <div class = "col-sm-8 mt-3 p-3" id = "mainContainerRoot">
         Main Root
     </div>
 </div>
