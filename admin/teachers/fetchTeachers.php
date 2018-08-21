@@ -18,6 +18,7 @@ if ($result->num_rows >0) {
     $teacher->department_name = getDepartmentName($row['department_id']);
     $teacher->teacher_name = $row['teacher_name'];
     $teacher->teacher_id = $row['teacher_id'];
+    $teacher->department_id = $row['department_id'];
 
     $arrayData[]=$teacher;
     

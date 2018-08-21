@@ -12,4 +12,5 @@ function getDepartmentName($department_id){
       }
     }
 }
+
 ?>

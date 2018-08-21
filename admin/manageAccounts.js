@@ -9,7 +9,7 @@ class ManageAccout extends React.Component {
       addAccountContainer: "d-none"
     };
   }
-  
+
   chooseDepartment() {
     $.ajax({
       type: "Post",
@@ -190,8 +190,38 @@ class SecretaryAccoutsItem extends React.Component {
       <React.Fragment>
         <div className="mt-2 list-group-item p-3 list-group-item-action border-0 bg-primary text-white">
           <div className="row">
-            <div className="col-sm-4 font-weight-bold">{this.props.account_name}</div>
-            <div className="col-sm-4">{this.props.department_name}</div>
+            <div className="col font-weight-bold">
+              {this.props.account_name}
+            </div>
+            <div className="col">{this.props.department_name}</div>
+            <div className="col">
+            <div className = "flex-row-reverse">
+            <button
+                  type="button"
+                  class="btn btn-outline-info mr-3"
+                  data-toggle="modal"
+                  data-target={
+                    "#updateCourseModal" +
+                    this.props.course_id +
+                    this.props.department_id
+                  }
+                >
+                  Update
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-danger"
+                  data-toggle="modal"
+                  data-target={
+                    "#deleteCourseModal" +
+                    this.props.course_id +
+                    this.props.department_id
+                  }
+                >
+                  Remove
+                </button>
+            </div>
+            </div>
           </div>
         </div>
       </React.Fragment>

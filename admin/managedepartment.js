@@ -150,6 +150,27 @@ class DepartmentItem extends React.Component {
       }
     });
   }
+  updateDepartment() {
+    let sup = this;
+    let update_department = $(
+      "#update_department_name" + this.props.department_id
+    ).val();
+    $.ajax({
+      type: "Post",
+      url: "department/updateDepartment.php",
+      data: {
+        department_name: update_department,
+        department_id: sup.props.department_id
+      },
+      success: function(data) {
+        if (data == "success") {
+        } else {
+          console.log(data);
+        }
+      }
+    });
+    $("#updateDepartmentModal" + sup.props.department_id).modal("hide");
+  }
   componentDidMount() {
     this.getCourse();
   }
@@ -158,43 +179,85 @@ class DepartmentItem extends React.Component {
     var courseContainer = document.getElementById(
       "courseContainer" + this.props.department_id
     );
+    setInterval(function() {
+      $.ajax({
+        type: "Post",
+        url: "department/fetchCourse.php",
+        data: { department_id: sup.props.department_id },
+        success: function(data) {
+          var listItem = JSON.parse(data).map(object => (
+            <CourseItem
+              key={object.course_id}
+              course_id={object.course_id}
+              department_id={object.department_id}
+              coursename={object.course_name}
+            />
+          ));
+          ReactDOM.render(
+            <ul className="list-group w-100">{listItem}</ul>,
+            courseContainer
+          );
+        }
+      });
+    }, 1000); //time in milliseconds
+  }
+  deleteDepartment() {
+    let sup = this;
     $.ajax({
       type: "Post",
-      url: "department/fetchCourse.php",
-      data: { department_id: sup.props.department_id },
+      url: "department/removeDepartment.php",
+      data: {
+        department_id: sup.props.department_id
+      },
       success: function(data) {
-        var listItem = JSON.parse(data).map(object => (
-          <CourseItem
-            key={object.course_id}
-            department_id={object.department_id}
-            coursename={object.course_name}
-          />
-        ));
-        ReactDOM.render(
-          <ul className="list-group w-100">{listItem}</ul>,
-          courseContainer
-        );
+        if (data == "success") {
+          $(
+            "#removeDepartmentModal" + sup.props.department_id
+          ).modal("hide");
+        } else {
+          console.log(data);
+        }
       }
     });
   }
   render() {
     return (
       <React.Fragment>
-        <div
-          onClick={this.extend.bind(this)}
-          className="mt-3 font-weight-bold list-group-item shadow-sm p-3 list-group-item-action rounded border-0 bg-primary text-white"
-        >
-         <div className = "d-flex justify-content-between">
-          <div>
-            {this.props.departmentname}
+        <div className="mt-3 font-weight-bold list-group-item shadow-sm p-3 list-group-item-action rounded border-0 bg-primary text-white">
+          <div className="d-flex justify-content-between">
+            <div onClick={this.extend.bind(this)}>
+              {this.props.departmentname}
+            </div>
+            <div>
+              <button
+                type="button"
+                class="btn btn-outline-light mr-3"
+                data-toggle="modal"
+                data-target={
+                  "#updateDepartmentModal" + this.props.department_id
+                }
+              >
+               {/* update department button */}
+                Update
+              </button>
+              <button type="button" class="btn btn-outline-light"
+              data-toggle="modal"
+              data-target={
+                "#removeDepartmentModal" + this.props.department_id
+              }
+              >
+              {/* remove department button */}
+                Remove
+              </button>
+            </div>
           </div>
-          <div>
-           <button type="button" class="btn btn-outline-light mr-3">Update</button>
-           <button type="button" class="btn btn-outline-light">Remove</button>
-          </div>
-         </div>
         </div>
-        <div className={"w-100 border shadow border-white bg-white p-3 mt-2 rounded " + this.state.extend}>
+        <div
+          className={
+            "w-100 border shadow border-white bg-white p-3 mt-2 rounded " +
+            this.state.extend
+          }
+        >
           <div className="row">
             <div className="col-sm-1 mr-1">
               <button
@@ -238,6 +301,108 @@ class DepartmentItem extends React.Component {
             className="row p-3"
           />
         </div>
+        {/* update department modal */}
+        <div
+          className="modal fade"
+          id={"updateDepartmentModal" + this.props.department_id}
+          tabIndex="-1"
+          role="dialog"
+          aria-labelledby="exampleModalLabel"
+          aria-hidden="true"
+        >
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel">
+                  Update Department
+                </h5>
+                <button
+                  type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div className="modal-body">
+                <div className="form-group w-100">
+                  <input
+                    type="text"
+                    defaultValue={this.props.departmentname}
+                    className="form-control"
+                    id={"update_department_name" + this.props.department_id}
+                    aria-describedby="emailHelp"
+                    placeholder="Enter Department Name"
+                  />
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  data-dismiss="modal"
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  onClick={this.updateDepartment.bind(this)}
+                  className="btn btn-primary"
+                >
+                  Save changes
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* remove department  modal*/}
+
+         <div
+          className="modal fade"
+          id={"removeDepartmentModal" + this.props.department_id}
+          tabIndex="-1"
+          role="dialog"
+          aria-labelledby="exampleModalLabel"
+          aria-hidden="true"
+        >
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel">
+                  Update Department
+                </h5>
+                <button
+                  type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div className="modal-body">
+               Remove {this.props.departmentname}?
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  data-dismiss="modal"
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  onClick={this.deleteDepartment.bind(this)}
+                  className="btn btn-primary"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </React.Fragment>
     );
   }
@@ -245,11 +410,198 @@ class DepartmentItem extends React.Component {
 
 class CourseItem extends React.Component {
   state = {};
+  updateCourse() {
+    let sup = this;
+    let updateCourse = $(
+      "#update_course_name" + this.props.course_id + this.props.department_id
+    ).val();
+    $.ajax({
+      type: "Post",
+      url: "department/updateCourse.php",
+      data: {
+        course_name: updateCourse,
+        course_id: sup.props.course_id
+      },
+      success: function(data) {
+        if (data == "success") {
+          $(
+            "#updateCourseModal" + sup.props.course_id + sup.props.department_id
+          ).modal("hide");
+        } else {
+          console.log(data);
+        }
+      }
+    });
+  }
+  deleteCourse() {
+    let sup = this;
+    $.ajax({
+      type: "Post",
+      url: "department/removeCourse.php",
+      data: {
+        course_id: sup.props.course_id
+      },
+      success: function(data) {
+        if (data == "success") {
+          $(
+            "#deleteCourseModal" +
+            sup.props.course_id +
+            sup.props.department_id
+          ).modal("hide");
+        } else {
+          console.log(data);
+        }
+      }
+    });
+  }
   render() {
     return (
       <React.Fragment>
         <div className="mt-2 list-group-item p-3 list-group-item-action border-0 bg-light">
-          {this.props.coursename}
+          <div className="row">
+            <div className="col">{this.props.coursename}</div>
+            <div className="col d-flex flex-row-reverse bd-highlight">
+              <div>
+                <button
+                  type="button"
+                  class="btn btn-outline-info mr-3"
+                  data-toggle="modal"
+                  data-target={
+                    "#updateCourseModal" +
+                    this.props.course_id +
+                    this.props.department_id
+                  }
+                >
+                  Update
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-danger"
+                  data-toggle="modal"
+                  data-target={
+                    "#deleteCourseModal" +
+                    this.props.course_id +
+                    this.props.department_id
+                  }
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* update course modal */}
+        <div
+          className="modal fade"
+          id={
+            "updateCourseModal" +
+            this.props.course_id +
+            this.props.department_id
+          }
+          tabIndex="-1"
+          role="dialog"
+          aria-labelledby="exampleModalLabel"
+          aria-hidden="true"
+        >
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel">
+                  Update Course
+                </h5>
+                <button
+                  type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div className="modal-body">
+                <div className="form-group w-100">
+                  <input
+                    type="text"
+                    defaultValue={this.props.coursename}
+                    className="form-control"
+                    id={
+                      "update_course_name" +
+                      this.props.course_id +
+                      this.props.department_id
+                    }
+                    aria-describedby="emailHelp"
+                    placeholder="Enter Course Name"
+                  />
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  data-dismiss="modal"
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  onClick={this.updateCourse.bind(this)}
+                  className="btn btn-primary"
+                >
+                  Save changes
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* delete course modal */}
+        <div
+          className="modal fade"
+          id={
+            "deleteCourseModal" +
+            this.props.course_id +
+            this.props.department_id
+          }
+          tabIndex="-1"
+          role="dialog"
+          aria-labelledby="exampleModalLabel"
+          aria-hidden="true"
+        >
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel">
+                  Delete Course
+                </h5>
+                <button
+                  type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div className="modal-body">
+              Delete {this.props.coursename}
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  data-dismiss="modal"
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  onClick={this.deleteCourse.bind(this)}
+                  className="btn btn-primary"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </React.Fragment>
     );
