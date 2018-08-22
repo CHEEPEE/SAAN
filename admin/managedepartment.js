@@ -62,7 +62,7 @@ class ManageDepartment extends React.Component {
   }
   render() {
     return (
-      <React.Fragment>
+      <div className = "container">
         <div className="row">
           <div className="col-sm-2">
             <button
@@ -104,7 +104,7 @@ class ManageDepartment extends React.Component {
         <div id="deparmentsContainer" className="row p-3 w-100">
           {/* Department Container */}
         </div>
-      </React.Fragment>
+      </div>
     );
   }
 }
@@ -223,15 +223,15 @@ class DepartmentItem extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <div className="mt-3 font-weight-bold list-group-item shadow-sm p-3 list-group-item-action rounded border-0 bg-primary text-white">
+        <div className="mt-3 font-weight-bold list-group-item shadow-sm p-3 list-group-item-action rounded border-0 bg-white text-info">
           <div className="d-flex justify-content-between">
-            <div onClick={this.extend.bind(this)}>
-              {this.props.departmentname}
+            <div className = "align-self-center" onClick={this.extend.bind(this)}>
+              <h5>{this.props.departmentname}</h5>
             </div>
             <div>
               <button
                 type="button"
-                class="btn btn-outline-light mr-3"
+                class="btn btn-outline-info mr-3"
                 data-toggle="modal"
                 data-target={
                   "#updateDepartmentModal" + this.props.department_id
@@ -240,7 +240,7 @@ class DepartmentItem extends React.Component {
                {/* update department button */}
                 Update
               </button>
-              <button type="button" class="btn btn-outline-light"
+              <button type="button" class="btn btn-outline-danger"
               data-toggle="modal"
               data-target={
                 "#removeDepartmentModal" + this.props.department_id

@@ -29,7 +29,7 @@ class ManageTeachers extends React.Component {
               id={object.teacher_id}
               teacher_name={object.teacher_name}
               department_name={object.department_name}
-              department_id = {object.department_id}
+              department_id={object.department_id}
             />
           );
         });
@@ -85,75 +85,116 @@ class ManageTeachers extends React.Component {
     this.chooseDepartment();
     this.fetchTeacher();
   }
+
+  
   render() {
     return (
-      <React.Fragment>
-        <div className="row">
-          <button
-            type="button"
-            onClick={this.insertTeacherState.bind(this)}
-            className="btn btn-info"
-          >
-            Add Teacher
-          </button>
-        </div>
-        <div
-          className={
-            "row mt-3 shadow bg-white rounded pl-3 pr-3 pt-3 pb-3 " +
-            this.state.insertTeacherState
-          }
-        >
-          <div className="col-sm-12">
-            <h3>Teachers Information</h3>
-          </div>
-          <div className="col-sm-4">
-            <div className="form-group w-100">
-              <input
-                id="teacher_name"
-                type="text"
-                className="form-control"
-                aria-describedby="emailHelp"
-                placeholder="Teachers Name"
-              />
-            </div>
-          </div>
-          <div className="col-sm-4">
-            <div className="input-group mb-3">
-              <select class="custom-select" id="department">
-                {/* choose department container */}
-              </select>
-              <div class="input-group-append">
-                <label class="input-group-text" for="inputGroupSelect02">
-                  Department
-                </label>
-              </div>
-            </div>
-          </div>
-          <div className="col-sm-2">
+      <div className="row">
+      {/* first column */}
+        <div className="col">
+          <div className="row">
             <button
               type="button"
-              onClick={this.saveTeacher.bind(this)}
-              className="w-100 ml-3 mr-3 btn btn-info"
+              onClick={this.insertTeacherState.bind(this)}
+              className="ml-3 btn btn-info"
             >
-              Save Teachers Information
+              Add Teacher
             </button>
           </div>
-        </div>
-        <div
-          className={"row mt-5 shadow bg-white rounded pl-3 pr-3 pt-3 pb-3 "}
-        >
-          <div className="col-sm-12">
-            <h3>Teachers List </h3>
+          <div
+            className={
+              "row shadow-sm bg-white rounded mt-3 ml-1 mr-1 pt-3 pl-3 pr-3 pb-3 " +
+              this.state.insertTeacherState
+            }
+          >
+            <div className="col-sm-12">
+              <h3>Teachers Information</h3>
+            </div>
+            <div className="col-sm-12">
+              <div className="form-group w-100">
+                <input
+                  id="teacher_name"
+                  type="text"
+                  className="form-control"
+                  aria-describedby="emailHelp"
+                  placeholder="Teachers Name"
+                />
+              </div>
+            </div>
+            <div className="col-sm-12">
+              <div className="input-group mb-3">
+                <select class="custom-select" id="department">
+                  {/* choose department container */}
+                </select>
+                <div class="input-group-append">
+                  <label class="input-group-text" for="inputGroupSelect02">
+                    Department
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div className="col-sm-12">
+              <button
+                type="button"
+                onClick={this.saveTeacher.bind(this)}
+                className="w-100 btn btn-info"
+              >
+                Save Teachers Information
+              </button>
+            </div>
           </div>
-          <div className="col-sm-12">
-            <div className="mt-3" id="teacherListContainer" />
+          <div
+            className={"row mt-1 rounded pr-3 pt-3 pb-3 "}
+          >
+            <div className="col-sm-12">
+              <h3>Teachers List </h3>
+            </div>
+            <div className="col-sm-12">
+              <div className="mt-3" id="teacherListContainer" />
+            </div>
           </div>
         </div>
-      </React.Fragment>
+        {/* second column */}
+        <div className="col mt-5" id = "mainSecondColumn" />
+      </div>
     );
   }
 }
-
+function fetchSubjects(teacher_id,teacher_name){
+  $.ajax({
+    type: "Post",
+    url: "teachers/fetchSubject.php",
+    data: { teacher_id:teacher_id },
+    success: function(data) {
+      console.log(data);
+      var listItem = JSON.parse(data).map(function(object, index) {
+        return (
+          <SubjectItem
+            key={object.subject_id}
+            subject_id={object.subject_id}
+            subject_code={object.subject_code}
+            subject_des={object.subject_des}
+            teacher_id = {teacher_id}
+            teacher_name = {teacher_name}
+          />
+        );
+      });
+      ReactDOM.render(
+        <React.Fragment>
+        <div className = "row">
+          <h3 className = "text-info">
+          {teacher_name}
+          </h3>
+        </div>
+        <div className = "row">
+          {listItem}
+        </div>
+        </React.Fragment>,
+        document.getElementById("mainSecondColumn")
+      );
+    }
+  });
+}
 class TeacherItem extends React.Component {
   constructor(props) {
     super(props);
@@ -162,7 +203,7 @@ class TeacherItem extends React.Component {
       teacherExtend: "d-none",
       updateTeacherExtend: "d-none",
       teacherItem: "visible",
-      selectedDepartmentOption:""
+      selectedDepartmentOption: ""
     };
   }
   teacherExtend() {
@@ -176,29 +217,10 @@ class TeacherItem extends React.Component {
     });
   }
   fetchSubjects() {
-    let sup = this;
-    $.ajax({
-      type: "Post",
-      url: "teachers/fetchSubject.php",
-      data: { teacher_id: sup.props.id },
-      success: function(data) {
-        console.log(data);
-        var listItem = JSON.parse(data).map(function(object, index) {
-          return (
-            <SubjectItem
-              key={object.subject_id}
-              id={object.subject_id}
-              subject_code={object.subject_code}
-              subject_des={object.subject_des}
-            />
-          );
-        });
-        ReactDOM.render(
-          <React.Fragment>{listItem}</React.Fragment>,
-          document.getElementById("subjectsContainer" + sup.props.id)
-        );
-      }
-    });
+    
+  
+    fetchSubjects(this.props.id,this.props.teacher_name);
+
   }
   addSubject() {
     let sup = this;
@@ -223,44 +245,43 @@ class TeacherItem extends React.Component {
   }
   updateSubject() {}
   componentDidMount() {
-    this.fetchSubjects();
-    this.fetchDepartmentOptions();
+  
   }
   updateTeacherExtend() {
-    this.setState({
-      updateTeacherExtend:
-        this.state.updateTeacherExtend == "d-none" ? "visible" : "d-none",
-      teacherItem: this.state.teacherItem == "d-none" ? "visible" : "d-none"
-    });
+    ReactDOM.render(
+      <UpdateTeacher teacherName = {this.props.teacher_name}/>,
+      document.getElementById("mainSecondColumn")
+    );
   }
 
-  fetchDepartmentOptions(){
+  fetchDepartmentOptions() {
     let sup = this;
     $.ajax({
       url: "teachers/functions.php",
       method: "POST",
       data: {
         department_id: sup.props.department_id,
-        requestType:"fetchDepartmentOptions"
+        requestType: "fetchDepartmentOptions"
       },
       success: function(data) {
         console.log(data);
         var listItem = JSON.parse(data).map(function(object, index) {
-          if (sup.props.department_id == object.department_id){
+          if (sup.props.department_id == object.department_id) {
             sup.setState({
-              selectedDepartmentOption:object.department_id
+              selectedDepartmentOption: object.department_id
             });
           }
           return (
             <OptionItem
               key={object.department_id}
-              id={object.department_id}
-              content = {object.department_name}
+              optionValue={object.department_id}
+              optionName={object.department_name}
             />
           );
         });
         ReactDOM.render(
-          <React.Fragment>{listItem}</React.Fragment>,
+          <React.Fragment>
+          {listItem}</React.Fragment>,
           document.getElementById("department" + sup.props.id)
         );
       }
@@ -277,13 +298,20 @@ class TeacherItem extends React.Component {
         >
           <div className="row p-1">
             <div
-              className="col text-capitalize font-weight-bold"
-              onClick={this.teacherExtend.bind(this)}
+              className="col text-capitalize text-info font-weight-bold"
+              onClick={this.fetchSubjects.bind(this)}
             >
               <h5>{this.props.teacher_name}</h5>
             </div>
             <div className="col d-flex flex-row-reverse">
               <div className="d-flex align-items-center">
+              <button
+                  onClick={this.teacherExtend.bind(this)}
+                  type="button"
+                  class="btn btn-warning text-white mr-3"
+                >
+                  Add Subject
+                </button>
                 <button
                   onClick={this.updateTeacherExtend.bind(this)}
                   type="button"
@@ -308,7 +336,7 @@ class TeacherItem extends React.Component {
               <input
                 id="teacher_name"
                 type="text"
-                defaultValue = {this.props.teacher_name}
+                defaultValue={this.props.teacher_name}
                 className="form-control"
                 aria-describedby="emailHelp"
                 placeholder="Teachers Name"
@@ -317,7 +345,11 @@ class TeacherItem extends React.Component {
           </div>
           <div className="col-sm-4">
             <div className="input-group mb-3">
-              <select class="custom-select" id={"department"+this.props.id} defaultValue = {this.state.selectedDepartmentOption}>
+              <select
+                class="custom-select"
+                id={"department" + this.props.id}
+                defaultValue={this.state.selectedDepartmentOption}
+              >
                 {/* choose department container */}
               </select>
               <div class="input-group-append">
@@ -328,28 +360,23 @@ class TeacherItem extends React.Component {
             </div>
           </div>
           <div className="col-sm-4 d-flex flex-row-reverse">
-          <button
-            type="button"
-            onClick={this.updateTeacherExtend.bind(this)}
-            class="btn btn-danger"
-          >
-            Cancel
-          </button>
             <button
               type="button"
-              
-              className="ml-3 mr-3 btn btn-info"
+              onClick={this.updateTeacherExtend.bind(this)}
+              class="btn btn-danger"
             >
+              Cancel
+            </button>
+            <button type="button" className="ml-3 mr-3 btn btn-info">
               Save Teachers Information
             </button>
-        
           </div>
         </div>
         {/* end update Teacher Infomation Form */}
 
         {/* start add course form */}
-        <div className={"row p-3 " + this.state.teacherExtend}>
-          <div className="col-sm-2">
+        <div className={"row pt-3 " + this.state.teacherExtend}>
+          <div className="col-sm-4">
             <div className="form-group w-100">
               <input
                 type="text"
@@ -360,7 +387,7 @@ class TeacherItem extends React.Component {
               />
             </div>
           </div>
-          <div className="col-sm-6">
+          <div className="col-sm-5">
             <div className="form-group w-100">
               <input
                 type="text"
@@ -381,34 +408,88 @@ class TeacherItem extends React.Component {
             </button>
           </div>
           {/* end add course form*/}
-
-          {/* subjects Container list */}
-          <div className="col-sm-12">
-            <div className="row" id={"subjectsContainer" + this.props.id} />
-          </div>
-          {/* end subjects Container list */}
         </div>
       </React.Fragment>
     );
   }
 }
 
+class UpdateTeacher extends React.Component {
+
+  render() { 
+    return ( 
+    <React.Fragment>
+      <div className = "row">
+        <h3 className = "text-info">{this.props.teacherName}</h3>
+      </div>
+      <div className = "row">
+
+      </div>
+    </React.Fragment> );
+  }
+}
+ 
+
+
+
 class SubjectItem extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      updateExtend: "d-none"
+      updateExtend: "d-none",
+      itemVis:"visible",
+      removeApproval:"d-none"
     };
   }
   updateExtend() {
     this.setState({
-      updateExtend: this.state.updateExtend == "d-none" ? "visible" : "d-none"
+      updateExtend: this.state.updateExtend == "d-none" ? "visible" : "d-none",
+      itemVis: this.state.itemVis == "d-none" ? "visible" : "d-none"
+    });
+  }
+  removeApproval(){
+    this.setState({
+      removeApproval: this.state.removeApproval == "d-none" ? "visible" : "d-none",
+    });
+  }
+  saveChanges(){
+    let sup = this;
+    let subject_code = $("#update_subject_code"+this.props.subject_id).val();
+    let subjectc_des = $("#update_subject_des"+this.props.subject_id).val();
+    $.ajax({
+      url: "teachers/functions.php",
+      method: "POST",
+      data: {
+        subject_id: sup.props.subject_id,
+        subject_code:subject_code,
+        subject_des:subjectc_des,
+        requestType: "updateSubject"
+      },
+      success: function(data) {
+        fetchSubjects(sup.props.teacher_id,sup.props.teacher_name);
+      }
+    });
+    this.updateExtend();
+  
+  }
+  remove_subject(){
+    let sup = this;
+    $.ajax({
+      url: "teachers/functions.php",
+      method: "POST",
+      data: {
+        subject_id: sup.props.subject_id,
+        requestType: "removeSubject"
+      },
+      success: function(data) {
+        fetchSubjects(sup.props.teacher_id,sup.props.teacher_name);
+      }
     });
   }
   render() {
     return (
       <React.Fragment>
-        <div className="col-sm-12 mt-2 m-1 list-group-item bg-light list-group-item-action border-0">
+        <div className={"col-sm-12 mt-2 m-1 list-group-item bg-white shadow-sm list-group-item-action border-0 "+this.state.itemVis}>
           <div className="row">
             <div className="col">
               <div className="row m-2">
@@ -435,13 +516,17 @@ class SubjectItem extends React.Component {
                 >
                   Update
                 </button>
-                <button type="button" class="btn btn-danger">
+                <button onClick = {this.removeApproval.bind(this)} type="button" class="btn btn-danger">
                   Remove
                 </button>
               </div>
             </div>
           </div>
         </div>
+        <div class={"w-100 ml-1 alert alert-danger row "+this.state.removeApproval} role="alert">
+          <div className = "col">Are you sure to remove this subject? </div><a onClick = {this.remove_subject.bind(this)} className = "text-success col">YES</a>
+        </div>
+        {/* update form */}
         <div className={"col-sm-12 " + this.state.updateExtend}>
           <div className="row mt-1 p-2 border rounded">
             <div className="col p-2">
@@ -454,9 +539,9 @@ class SubjectItem extends React.Component {
                     type="text"
                     defaultValue={this.props.subject_code}
                     className="form-control"
-                    id="department_name"
+                    id={"update_subject_code"+this.props.subject_id}
                     aria-describedby="emailHelp"
-                    placeholder="Enter Department Name"
+                    placeholder="Subject Code"
                   />
                 </div>
               </div>
@@ -471,16 +556,16 @@ class SubjectItem extends React.Component {
                     type="text"
                     defaultValue={this.props.subject_des}
                     className="form-control"
-                    id="department_name"
+                    id={"update_subject_des"+this.props.subject_id}
                     aria-describedby="emailHelp"
-                    placeholder="Enter Department Name"
+                    placeholder="subject_des"
                   />
                 </div>
               </div>
             </div>
             <div className="col d-flex flex-row-reverse">
               <div className="d-flex align-items-center">
-                <button type="button" class="btn btn-info mr-3">
+                <button type="button" onClick = {this.saveChanges.bind(this)} class="btn btn-info mr-3">
                   Save
                 </button>
               </div>
@@ -489,16 +574,5 @@ class SubjectItem extends React.Component {
         </div>
       </React.Fragment>
     );
-  }
-}
-
-class OptionItem extends React.Component {
-  state = {  }
-  render() { 
-    return ( 
-    <option defaultValue = {this.props.id}>
-      {this.props.content}
-    </option> 
-    )
   }
 }

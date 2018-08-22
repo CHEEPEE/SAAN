@@ -89,87 +89,94 @@ class ManageAccout extends React.Component {
   }
   render() {
     return (
-      <React.Fragment>
-        <div className="row">
-          <button
-            type="button"
-            onClick={this.chageStateAddAccountLayout.bind(this)}
-            className="btn btn-outline-primary"
-          >
-            Add Secretary Account
-          </button>
-        </div>
-        <div
-          className={
-            "row mt-3 border rounded pl-3 pr-3 pt-5 pb-5 " +
-            this.state.addAccountContainer
-          }
-        >
-          <h5 className="col-sm-12">Add Account</h5>
-          <div className="col-sm-6">
-            <div className="form-group w-100">
-              <input
-                id="accountname"
-                type="text"
-                className="form-control"
-                aria-describedby="emailHelp"
-                placeholder="Full Name"
-              />
-            </div>
+      <div className="row">
+        {/* first column */}
+        <div className="col">
+          <div className="row">
+            <button
+              type="button"
+              onClick={this.chageStateAddAccountLayout.bind(this)}
+              className="btn btn-outline-primary"
+            >
+              Add Secretary Account
+            </button>
           </div>
-          <div className="col-sm-6">
-            <div className="input-group mb-3">
-              <select class="custom-select" id="department">
-                {/* choose department container */}
-              </select>
-              <div class="input-group-append">
-                <label class="input-group-text" for="inputGroupSelect02">
-                  Choose Department
-                </label>
+          <div
+            className={
+              "row mt-3 border-0 rounded bg-white shadow-sm pl-3 pr-3 pt-5 pb-5 " +
+              this.state.addAccountContainer
+            }
+          >
+            <h5 className="col-sm-12">Add Account</h5>
+            <div className="col-sm-12">
+              <div className="form-group w-100">
+                <input
+                  id="accountname"
+                  type="text"
+                  className="form-control"
+                  aria-describedby="emailHelp"
+                  placeholder="Full Name"
+                />
               </div>
             </div>
-          </div>
-          <div className="col-sm-6">
-            <div className="form-group w-100">
-              <input
-                id="username"
-                type="text"
-                className="form-control"
-                aria-describedby="emailHelp"
-                placeholder="Login Username"
-              />
+            <div className="col-sm-12">
+              <div className="input-group mb-3">
+                <select class="custom-select" id="department">
+                  {/* choose department container */}
+                </select>
+                <div class="input-group-append">
+                  <label class="input-group-text" for="inputGroupSelect02">
+                    Choose Department
+                  </label>
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="col-sm-6">
-            <div className="form-group w-100">
-              <input
-                id="password"
-                type="password"
-                className="form-control"
-                aria-describedby="emailHelp"
-                placeholder="Password"
-              />
+            <div className="col-sm-6">
+              <div className="form-group w-100">
+                <input
+                  id="username"
+                  type="text"
+                  className="form-control"
+                  aria-describedby="emailHelp"
+                  placeholder="Login Username"
+                />
+              </div>
             </div>
+            <div className="col-sm-6">
+              <div className="form-group w-100">
+                <input
+                  id="password"
+                  type="password"
+                  className="form-control"
+                  aria-describedby="emailHelp"
+                  placeholder="Password"
+                />
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={this.createAccount.bind(this)}
+              className="w-100 ml-3 mr-3 btn btn-primary"
+            >
+              Creat Account
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={this.createAccount.bind(this)}
-            className="w-100 ml-3 mr-3 btn btn-primary"
-          >
-            Creat Account
-          </button>
-        </div>
 
-        <div className="row mt-3">
-          <h3>Secretary Accounts</h3>
-        </div>
-        <div id="secretaryAccountContainer" className="row" />
+          <div className="row mt-3">
+            <h3>Secretary Accounts</h3>
+          </div>
+          <div id="secretaryAccountContainer" className="row" />
 
-        <div className="row mt-3">
-          <h3>My Account</h3>
+          <div className="row mt-3">
+            <h3>My Account</h3>
+          </div>
+          <div id="myAccountContainer" className="row" />
         </div>
-        <div id="myAccountContainer" className="row" />
-      </React.Fragment>
+        {/* second column */}
+        <div className="col p-3" id = "detailsContainer">
+        nothing to show yet
+        </div>
+      </div>
     );
   }
 }
@@ -188,15 +195,15 @@ class SecretaryAccoutsItem extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <div className="mt-2 list-group-item p-3 list-group-item-action border-0 bg-primary text-white">
+        <div className="mt-2 list-group-item p-3 list-group-item-action shadow-sm border-0 bg-white ">
           <div className="row">
-            <div className="col font-weight-bold">
-              {this.props.account_name}
+            <div className="flex-grow-1 p-3">
+              <div className="row font-weight-bold pl-3 text-info">{this.props.account_name}</div>
+              <div className="row pl-3">{this.props.department_name}</div>
             </div>
-            <div className="col">{this.props.department_name}</div>
-            <div className="col">
-            <div className = "flex-row-reverse">
-            <button
+            <div className="p-3">
+              <div className = "">
+                <button
                   type="button"
                   class="btn btn-outline-info mr-3"
                   data-toggle="modal"
@@ -220,7 +227,8 @@ class SecretaryAccoutsItem extends React.Component {
                 >
                   Remove
                 </button>
-            </div>
+                </div>
+           
             </div>
           </div>
         </div>

@@ -16,19 +16,17 @@ class ManageStudents extends React.Component {
       type: "Post",
       url: "department/fetchDepartment.php",
       success: function(data) {
-        console.log(data);
-        var listItem = JSON.parse(data).map(function(object, index) {
-          return (
+        console.log("choose department "+data);
+        var listItem = JSON.parse(data).map(object => (
             <OptionItem
               key={object.department_id}
               optionValue={object.department_id}
               optionName={object.department_name}
             />
-          );
-        });
+          ));
         ReactDOM.render(
           <React.Fragment>{listItem}</React.Fragment>,
-          document.getElementById("department")
+          document.getElementById("dropdownDepartment")
         );
         sup.chooseCourse();
       }
@@ -36,13 +34,13 @@ class ManageStudents extends React.Component {
   }
   // trigger this function when the department change (based on department id)
   chooseCourse() {
-    let department_id = $("#department").val();
+    let department_id = $("#dropdownDepartment").val();
     $.ajax({
       type: "Post",
       url: "department/fetchCourse.php",
       data: { department_id: department_id },
       success: function(data) {
-        console.log(data);
+ 
 
         var listItem = JSON.parse(data).map(object => (
           <OptionItem
@@ -61,7 +59,7 @@ class ManageStudents extends React.Component {
 
   insertStudent() {
     let sup = this;
-    let department_id = $("#department").val();
+    let department_id = $("#dropdownDepartment").val();
     let course_id = $("#courseContainer").val();
     let year_level = $("#yearLevelContainer").val();
     let student_id = $("#student_id").val();
@@ -104,11 +102,12 @@ class ManageStudents extends React.Component {
 
   fetchStudents() {
     let sup = this;
+    setInterval(function() {
     $.ajax({
       type: "Post",
       url: "students/fetchStudents.php",
       success: function(data) {
-        console.log(data);
+      
         var listItem = JSON.parse(data).map(function(object, index) {
           return (
             <StudentItem
@@ -134,6 +133,7 @@ class ManageStudents extends React.Component {
         sup.chooseCourse();
       }
     });
+  },1000);
   }
 
   changeInserStudentState() {
@@ -171,7 +171,7 @@ class ManageStudents extends React.Component {
               <select
                 class="custom-select"
                 onChange={this.chooseCourse.bind(this)}
-                id="department"
+                id="dropdownDepartment"
               >
                 {/* choose department container */}
               </select>
@@ -346,12 +346,6 @@ class ManageStudents extends React.Component {
 }
 
 class OptionItem extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      selected: this.props.selected
-    };
-  }
   render() {
     return (
       <option value={this.props.optionValue}>{this.props.optionName}</option>
@@ -362,12 +356,33 @@ class StudentItem extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      extend: "d-none"
+      extend: "d-none",
+      removeStudentNotice: "d-none"
+
     };
   }
   extendState() {
     this.setState({
       extend: this.state.extend == "d-none" ? "visible" : "d-none"
+    });
+  }
+  removeNotice() {
+    this.setState({
+      removeStudentNotice: this.state.removeStudentNotice == "d-none" ? "visible" : "d-none"
+    });
+  }
+  removeStudent(){
+    let sup = this;
+    $.ajax({
+      type:"post",
+      url:"students/function.php",
+      data:{student_id:sup.props.student_id,
+        requestType:"removeStudent"
+      },
+      success:function(data){
+        console.log(data);
+      }
+
     });
   }
   render() {
@@ -417,11 +432,28 @@ class StudentItem extends React.Component {
             <div className = "row border-top mt-3 p-3 d-flex flex-row-reverse">
             <div>
             <button type="button" class="btn btn-info mr-3">Update</button>
-            <button type="button" class="btn btn-danger">Remove</button>
+            <button type="button" onClick = {this.removeNotice.bind(this)} class="btn btn-danger">Remove</button>
+            </div>
+            
+            </div>
+            <div className = {"row d-flex "}>
+            <div class={"alert alert-danger w-100 "+this.state.removeStudentNotice} role="alert">
+              <div className = "row">
+              <div className = "col-sm-10">
+              Are you sure to remove this? 
+              </div>
+              <div className = "col">
+              <div className = "row">
+              <div className = "col text-success" onClick ={this.removeStudent.bind(this)}>Yes</div>
+              <div className = "col text-danger">Cancel</div>
+              </div>
+              </div>
+              </div>
             </div>
             </div>
           </div>
         </div>
+
       </React.Fragment>
     );
   }

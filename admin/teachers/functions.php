@@ -26,4 +26,33 @@ if ($requestType == "fetchDepartmentOptions"){
 
 echo json_encode($arrayData);
 }
+
+if ($requestType == "updateSubject"){
+    include '../Database.php';
+    $subject_id = mysqli_real_escape_string($connect,$_POST['subject_id']);
+    $subject_code = mysqli_real_escape_string($connect,$_POST['subject_code']);
+    $subject_des = mysqli_real_escape_string($connect,$_POST['subject_des']);
+    $sql = "update subjects set subject_code = '$subject_code', subject_des = '$subject_des' where subject_id = $subject_id ";
+    if(mysqli_query($connect,$sql)) 
+    {
+        echo 'success';
+    }else {
+        echo "Error: " . $sql . "<br>" . $connect->error;
+    }
+}
+
+if ($requestType == "removeSubject"){
+    include '../Database.php';
+    $subject_id = mysqli_real_escape_string($connect,$_POST['subject_id']);
+   
+    $sql = "delete from subjects where subject_id = $subject_id ";
+    if(mysqli_query($connect,$sql)) 
+    {
+        echo 'success';
+    }else {
+        echo "Error: " . $sql . "<br>" . $connect->error;
+    }
+}
+
+
 ?>
