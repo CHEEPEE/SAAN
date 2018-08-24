@@ -54,5 +54,31 @@ if ($requestType == "removeSubject"){
     }
 }
 
+if ($requestType == "updateTeacher"){
+    include '../Database.php';
+    $teacher_id = mysqli_real_escape_string($connect,$_POST['teacher_id']);
+    $teacher_name = mysqli_real_escape_string($connect,$_POST['teacher_name']);
+  
+    $sql = "update teachers set teacher_name = '$teacher_name' where teacher_id = $teacher_id ";
+    if(mysqli_query($connect,$sql)) 
+    {
+        echo 'success';
+    }else {
+        echo "Error: " . $sql . "<br>" . $connect->error;
+    }
+}
+if ($requestType == "deleteTeacher"){
+    include '../Database.php';
+    $teacher_id = mysqli_real_escape_string($connect,$_POST['teacher_id']);
+  
+  
+    $sql = "delete from teachers where teacher_id = $teacher_id ";
+    if(mysqli_query($connect,$sql)) 
+    {
+        echo 'success';
+    }else {
+        echo "Error: " . $sql . "<br>" . $connect->error;
+    }
+}
 
 ?>

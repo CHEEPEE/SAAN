@@ -259,7 +259,7 @@ class DepartmentItem extends React.Component {
           }
         >
           <div className="row">
-            <div className="col-sm-1 mr-1">
+            <div className="col-sm-2 mr-1">
               <button
                 onClick={this.chageStateAddCourseInputLayout.bind(this)}
                 type="button"

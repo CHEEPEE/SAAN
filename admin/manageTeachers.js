@@ -17,28 +17,7 @@ class ManageTeachers extends React.Component {
   }
   fetchTeacher() {
     let sup = this;
-    $.ajax({
-      type: "Post",
-      url: "teachers/fetchTeachers.php",
-      success: function(data) {
-        console.log(data);
-        var listItem = JSON.parse(data).map(function(object, index) {
-          return (
-            <TeacherItem
-              key={object.teacher_id}
-              id={object.teacher_id}
-              teacher_name={object.teacher_name}
-              department_name={object.department_name}
-              department_id={object.department_id}
-            />
-          );
-        });
-        ReactDOM.render(
-          <React.Fragment>{listItem}</React.Fragment>,
-          document.getElementById("teacherListContainer")
-        );
-      }
-    });
+   fetchTeacher();
   }
   chooseDepartment() {
     let sup = this;
@@ -76,21 +55,20 @@ class ManageTeachers extends React.Component {
         department_id: department_id
       },
       success: function(data) {
-        console.log(data);
         $("#teacher_name").val("");
       }
     });
+    this.fetchTeacher();
   }
   componentDidMount() {
     this.chooseDepartment();
     this.fetchTeacher();
   }
 
-  
   render() {
     return (
       <div className="row">
-      {/* first column */}
+        {/* first column */}
         <div className="col">
           <div className="row">
             <button
@@ -143,9 +121,7 @@ class ManageTeachers extends React.Component {
               </button>
             </div>
           </div>
-          <div
-            className={"row mt-1 rounded pr-3 pt-3 pb-3 "}
-          >
+          <div className={"row mt-1 rounded pr-3 pt-3 pb-3 "}>
             <div className="col-sm-12">
               <h3>Teachers List </h3>
             </div>
@@ -155,16 +131,16 @@ class ManageTeachers extends React.Component {
           </div>
         </div>
         {/* second column */}
-        <div className="col mt-5" id = "mainSecondColumn" />
+        <div className="col mt-5" id="mainSecondColumn" />
       </div>
     );
   }
 }
-function fetchSubjects(teacher_id,teacher_name){
+function fetchSubjects(teacher_id, teacher_name) {
   $.ajax({
     type: "Post",
     url: "teachers/fetchSubject.php",
-    data: { teacher_id:teacher_id },
+    data: { teacher_id: teacher_id },
     success: function(data) {
       console.log(data);
       var listItem = JSON.parse(data).map(function(object, index) {
@@ -174,27 +150,26 @@ function fetchSubjects(teacher_id,teacher_name){
             subject_id={object.subject_id}
             subject_code={object.subject_code}
             subject_des={object.subject_des}
-            teacher_id = {teacher_id}
-            teacher_name = {teacher_name}
+            teacher_id={teacher_id}
+            teacher_name={teacher_name}
           />
         );
       });
       ReactDOM.render(
         <React.Fragment>
-        <div className = "row">
-          <h3 className = "text-info">
-          {teacher_name}
-          </h3>
-        </div>
-        <div className = "row">
-          {listItem}
-        </div>
+          <div className="row">
+            <h3 className="text-info">{teacher_name}</h3>
+          </div>
+          <div className="row">{listItem}</div>
         </React.Fragment>,
         document.getElementById("mainSecondColumn")
       );
     }
   });
 }
+
+
+
 class TeacherItem extends React.Component {
   constructor(props) {
     super(props);
@@ -204,6 +179,8 @@ class TeacherItem extends React.Component {
       updateTeacherExtend: "d-none",
       teacherItem: "visible",
       selectedDepartmentOption: ""
+      ,
+      removeTeacherExtend:"d-none"
     };
   }
   teacherExtend() {
@@ -216,11 +193,13 @@ class TeacherItem extends React.Component {
       extend: this.state.extend == "d-none" ? "visible" : "d-none"
     });
   }
+  removeTeacherExtend(){
+    this.setState({
+      removeTeacherExtend: this.state.removeTeacherExtend == "d-none" ? "visible" : "d-none"
+    });
+  }
   fetchSubjects() {
-    
-  
-    fetchSubjects(this.props.id,this.props.teacher_name);
-
+    fetchSubjects(this.props.id, this.props.teacher_name);
   }
   addSubject() {
     let sup = this;
@@ -236,20 +215,36 @@ class TeacherItem extends React.Component {
         teacher_id: teacher_id
       },
       success: function(data) {
-        console.log(data);
         $("#sub_des" + sup.props.id).val("");
         $("#subject_code" + sup.props.id).val("");
         sup.fetchSubjects();
       }
     });
   }
-  updateSubject() {}
-  componentDidMount() {
-  
+
+  removeTeacher() {
+    let teacher_id = this.props.id;
+    $.ajax({
+      url: "teachers/functions.php",
+      method: "POST",
+      data: {
+        requestType:"deleteTeacher",
+        teacher_id: teacher_id
+      },
+      success: function(data) {
+        console.log(data);
+      }
+    });
+    fetchTeacher();
   }
+
+  componentDidMount() {}
   updateTeacherExtend() {
     ReactDOM.render(
-      <UpdateTeacher teacherName = {this.props.teacher_name}/>,
+      <UpdateTeacher
+        teacher_id={this.props.id}
+        teacherName={this.props.teacher_name}
+      />,
       document.getElementById("mainSecondColumn")
     );
   }
@@ -280,8 +275,7 @@ class TeacherItem extends React.Component {
           );
         });
         ReactDOM.render(
-          <React.Fragment>
-          {listItem}</React.Fragment>,
+          <React.Fragment>{listItem}</React.Fragment>,
           document.getElementById("department" + sup.props.id)
         );
       }
@@ -302,10 +296,11 @@ class TeacherItem extends React.Component {
               onClick={this.fetchSubjects.bind(this)}
             >
               <h5>{this.props.teacher_name}</h5>
+              <small>{this.props.department_name}</small>
             </div>
             <div className="col d-flex flex-row-reverse">
               <div className="d-flex align-items-center">
-              <button
+                <button
                   onClick={this.teacherExtend.bind(this)}
                   type="button"
                   class="btn btn-warning text-white mr-3"
@@ -319,7 +314,7 @@ class TeacherItem extends React.Component {
                 >
                   Update
                 </button>
-                <button type="button" class="btn btn-danger">
+                <button type="button" onClick = {this.removeTeacherExtend.bind(this)} class="btn btn-danger">
                   Remove
                 </button>
               </div>
@@ -408,7 +403,22 @@ class TeacherItem extends React.Component {
             </button>
           </div>
           {/* end add course form*/}
+
         </div>
+        <div className = {"row m-2 "+this.state.removeTeacherExtend}>
+           <div className = "col-sm-12 p-3 bg-danger rounded shadow-sm font-weight-bold text-white ">
+              Remove {this.props.teacher_name} ?  
+              <button
+              type="button"
+              className="btn ml-5 btn-outline-light"
+              onClick = {this.removeTeacher.bind(this)}
+              
+            >
+              Remove Teacher
+            </button>
+           </div>
+        </div>
+
       </React.Fragment>
     );
   }
@@ -416,29 +426,67 @@ class TeacherItem extends React.Component {
 
 class UpdateTeacher extends React.Component {
 
-  render() { 
-    return ( 
-    <React.Fragment>
-      <div className = "row">
-        <h3 className = "text-info">{this.props.teacherName}</h3>
-      </div>
-      <div className = "row">
+  updateTeacher(){
+    let teacher_id =this.props.teacher_id;
+    let updatedTeacherName = $("#update_teacher_name").val();
 
-      </div>
-    </React.Fragment> );
+    $.ajax({
+      method:"post",
+      url:"teachers/functions.php",
+      data:{
+        requestType: "updateTeacher",
+        teacher_id:teacher_id,
+        teacher_name :updatedTeacherName
+      },
+      success:function(data){
+          console.log(data);
+      }
+    })
+    fetchTeacher();
+  }
+  render() {
+    return (
+      <React.Fragment>
+        <div className="row">
+          <h3 className="text-info">{this.props.teacherName}</h3>
+        </div>
+        <div className="row">
+          <div className="form-group w-100">
+            <input
+              id="update_teacher_name"
+              type="text"
+              defaultValue={this.props.teacherName}
+              className="form-control"
+              aria-describedby="emailHelp"
+              placeholder="Teachers Name"
+            />
+          </div>
+          <div className="form-group w-100">
+          <button
+                  onClick = {
+                    this.updateTeacher.bind(this)
+                  }
+                  type="button"
+                  class="btn btn-info"
+                >
+                  Update Name
+                </button>
+          </div>
+
+
+        </div>
+      </React.Fragment>
+    );
   }
 }
- 
-
-
 
 class SubjectItem extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       updateExtend: "d-none",
-      itemVis:"visible",
-      removeApproval:"d-none"
+      itemVis: "visible",
+      removeApproval: "d-none"
     };
   }
   updateExtend() {
@@ -447,32 +495,32 @@ class SubjectItem extends React.Component {
       itemVis: this.state.itemVis == "d-none" ? "visible" : "d-none"
     });
   }
-  removeApproval(){
+  removeApproval() {
     this.setState({
-      removeApproval: this.state.removeApproval == "d-none" ? "visible" : "d-none",
+      removeApproval:
+        this.state.removeApproval == "d-none" ? "visible" : "d-none"
     });
   }
-  saveChanges(){
+  saveChanges() {
     let sup = this;
-    let subject_code = $("#update_subject_code"+this.props.subject_id).val();
-    let subjectc_des = $("#update_subject_des"+this.props.subject_id).val();
+    let subject_code = $("#update_subject_code" + this.props.subject_id).val();
+    let subjectc_des = $("#update_subject_des" + this.props.subject_id).val();
     $.ajax({
       url: "teachers/functions.php",
       method: "POST",
       data: {
         subject_id: sup.props.subject_id,
-        subject_code:subject_code,
-        subject_des:subjectc_des,
+        subject_code: subject_code,
+        subject_des: subjectc_des,
         requestType: "updateSubject"
       },
       success: function(data) {
-        fetchSubjects(sup.props.teacher_id,sup.props.teacher_name);
+        fetchSubjects(sup.props.teacher_id, sup.props.teacher_name);
       }
     });
     this.updateExtend();
-  
   }
-  remove_subject(){
+  remove_subject() {
     let sup = this;
     $.ajax({
       url: "teachers/functions.php",
@@ -482,14 +530,19 @@ class SubjectItem extends React.Component {
         requestType: "removeSubject"
       },
       success: function(data) {
-        fetchSubjects(sup.props.teacher_id,sup.props.teacher_name);
+        fetchSubjects(sup.props.teacher_id, sup.props.teacher_name);
       }
     });
   }
   render() {
     return (
       <React.Fragment>
-        <div className={"col-sm-12 mt-2 m-1 list-group-item bg-white shadow-sm list-group-item-action border-0 "+this.state.itemVis}>
+        <div
+          className={
+            "col-sm-12 mt-2 m-1 list-group-item bg-white shadow-sm list-group-item-action border-0 " +
+            this.state.itemVis
+          }
+        >
           <div className="row">
             <div className="col">
               <div className="row m-2">
@@ -516,15 +569,30 @@ class SubjectItem extends React.Component {
                 >
                   Update
                 </button>
-                <button onClick = {this.removeApproval.bind(this)} type="button" class="btn btn-danger">
+                <button
+                  onClick={this.removeApproval.bind(this)}
+                  type="button"
+                  class="btn btn-danger"
+                >
                   Remove
                 </button>
               </div>
             </div>
           </div>
         </div>
-        <div class={"w-100 ml-1 alert alert-danger row "+this.state.removeApproval} role="alert">
-          <div className = "col">Are you sure to remove this subject? </div><a onClick = {this.remove_subject.bind(this)} className = "text-success col">YES</a>
+        <div
+          class={
+            "w-100 ml-1 alert alert-danger row " + this.state.removeApproval
+          }
+          role="alert"
+        >
+          <div className="col">Are you sure to remove this subject? </div>
+          <a
+            onClick={this.remove_subject.bind(this)}
+            className="text-success col"
+          >
+            YES
+          </a>
         </div>
         {/* update form */}
         <div className={"col-sm-12 " + this.state.updateExtend}>
@@ -539,7 +607,7 @@ class SubjectItem extends React.Component {
                     type="text"
                     defaultValue={this.props.subject_code}
                     className="form-control"
-                    id={"update_subject_code"+this.props.subject_id}
+                    id={"update_subject_code" + this.props.subject_id}
                     aria-describedby="emailHelp"
                     placeholder="Subject Code"
                   />
@@ -556,7 +624,7 @@ class SubjectItem extends React.Component {
                     type="text"
                     defaultValue={this.props.subject_des}
                     className="form-control"
-                    id={"update_subject_des"+this.props.subject_id}
+                    id={"update_subject_des" + this.props.subject_id}
                     aria-describedby="emailHelp"
                     placeholder="subject_des"
                   />
@@ -565,7 +633,11 @@ class SubjectItem extends React.Component {
             </div>
             <div className="col d-flex flex-row-reverse">
               <div className="d-flex align-items-center">
-                <button type="button" onClick = {this.saveChanges.bind(this)} class="btn btn-info mr-3">
+                <button
+                  type="button"
+                  onClick={this.saveChanges.bind(this)}
+                  class="btn btn-info mr-3"
+                >
                   Save
                 </button>
               </div>
@@ -575,4 +647,28 @@ class SubjectItem extends React.Component {
       </React.Fragment>
     );
   }
+}
+function fetchTeacher() {
+  let sup = this;
+  $.ajax({
+    type: "Post",
+    url: "teachers/fetchTeachers.php",
+    success: function(data) {
+      var listItem = JSON.parse(data).map(function(object, index) {
+        return (
+          <TeacherItem
+            key={object.teacher_id}
+            id={object.teacher_id}
+            teacher_name={object.teacher_name}
+            department_name={object.department_name}
+            department_id={object.department_id}
+          />
+        );
+      });
+      ReactDOM.render(
+        <React.Fragment>{listItem}</React.Fragment>,
+        document.getElementById("teacherListContainer")
+      );
+    }
+  });
 }
