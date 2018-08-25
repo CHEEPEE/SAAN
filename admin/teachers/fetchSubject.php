@@ -19,6 +19,7 @@ if ($result->num_rows >0) {
     $subject->subject_des = $row['subject_des'];
     $subject->teacher_id = $row['teacher_id'];
     $subject->subject_id = $row['subject_id'];
+    $subject->class_des = $row['class_des'];
 
    
     $arrayData[]=$subject;

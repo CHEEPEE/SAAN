@@ -50,6 +50,8 @@ if ($requestType == "getTeacherCourse"){
         $subjects->subject_id = $row['subject_id'];
         $subjects->subject_code = $row['subject_code'];
         $subjects->subject_des = $row['subject_des'];
+        $subjects->class_des = $row['class_des'];
+
 
         $arrayData[]=$subjects;        
     }
@@ -57,6 +59,43 @@ if ($requestType == "getTeacherCourse"){
 
 echo json_encode($arrayData);
 }
+
+if ($requestType == "getStudents"){
+    include '../Database.php';
+    session_start();
+    $dept_id = $_SESSION["dept_id"];
+    $student_id = mysqli_real_escape_string($connect,$_POST['student_id']);
+    $sql = "select * from students where student_id like '$student_id%' and department_id = $dept_id";
+    $result = $connect->query($sql);
+    $arrayData = array();
+    class myObject
+    {
+        
+    }
+    if ($result->num_rows >0) {
+    // code...
+    while ($row = $result->fetch_assoc()) {
+        // code...
+        $arrayData[]=$row;        
+    }
+}
+
+echo json_encode($arrayData);
+}
+
+function getTeacherDetails($teacherId){
+    include '../Database.php';
+    $sql = "select * from teachers where teacher_id = $teacherId";
+    $result = $connect->query($sql);
+    if ($result->num_rows >0) {
+      // code...
+      while ($row = $result->fetch_assoc()) {
+        // code...
+        return $row;
+      }
+    }
+}
+
 
 function getDepartmentName($department_id){
     include '../Database.php';
@@ -69,5 +108,5 @@ function getDepartmentName($department_id){
         return $row["department_name"];
       }
     }
-    }
+}
   ?>

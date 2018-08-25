@@ -152,6 +152,7 @@ function fetchSubjects(teacher_id, teacher_name) {
             subject_des={object.subject_des}
             teacher_id={teacher_id}
             teacher_name={teacher_name}
+            class_des = {object.class_des}
           />
         );
       });
@@ -167,8 +168,6 @@ function fetchSubjects(teacher_id, teacher_name) {
     }
   });
 }
-
-
 
 class TeacherItem extends React.Component {
   constructor(props) {
@@ -187,6 +186,7 @@ class TeacherItem extends React.Component {
     this.setState({
       teacherExtend: this.state.teacherExtend == "d-none" ? "visible" : "d-none"
     });
+    this.fetchSubjects();
   }
   extendState() {
     this.setState({
@@ -205,18 +205,22 @@ class TeacherItem extends React.Component {
     let sup = this;
     let subject_code = $("#subject_code" + this.props.id).val();
     let subject_des = $("#sub_des" + this.props.id).val();
+    let class_des = $("#class_des" + this.props.id).val();
     let teacher_id = this.props.id;
+
     $.ajax({
       url: "teachers/addSubject.php",
       method: "POST",
       data: {
         subject_code: subject_code,
         subject_des: subject_des,
-        teacher_id: teacher_id
+        teacher_id: teacher_id,
+        class_des:class_des
       },
       success: function(data) {
         $("#sub_des" + sup.props.id).val("");
         $("#subject_code" + sup.props.id).val("");
+        $("#class_des" + sup.props.id).val("");
         sup.fetchSubjects();
       }
     });
@@ -292,13 +296,13 @@ class TeacherItem extends React.Component {
         >
           <div className="row p-1">
             <div
-              className="col text-capitalize text-info font-weight-bold"
+              className="col col-sm-12 text-capitalize text-info font-weight-bold"
               onClick={this.fetchSubjects.bind(this)}
             >
               <h5>{this.props.teacher_name}</h5>
               <small>{this.props.department_name}</small>
             </div>
-            <div className="col d-flex flex-row-reverse">
+            <div className="col-sm-12 mt-3 d-flex flex-row-reverse">
               <div className="d-flex align-items-center">
                 <button
                   onClick={this.teacherExtend.bind(this)}
@@ -370,8 +374,8 @@ class TeacherItem extends React.Component {
         {/* end update Teacher Infomation Form */}
 
         {/* start add course form */}
-        <div className={"row pt-3 " + this.state.teacherExtend}>
-          <div className="col-sm-4">
+        <div className={"row bg-white m-1 p-3 shadow-sm " + this.state.teacherExtend}>
+          <div className="col-sm-6">
             <div className="form-group w-100">
               <input
                 type="text"
@@ -382,7 +386,7 @@ class TeacherItem extends React.Component {
               />
             </div>
           </div>
-          <div className="col-sm-5">
+          <div className="col-sm-6">
             <div className="form-group w-100">
               <input
                 type="text"
@@ -393,7 +397,20 @@ class TeacherItem extends React.Component {
               />
             </div>
           </div>
-          <div className="col-sm-2">
+          <div className="col-sm-12">
+            <div className="form-group w-100">
+              <input
+                type="text"
+                id={"class_des" + this.props.id}
+                className="form-control"
+                aria-describedby="emailHelp"
+                placeholder="Class Shedule"
+              />
+              <small>Ex: MV 10:30 AM - 12:00 AM</small>
+            </div>
+          </div>
+
+          <div className="col-sm-12">
             <button
               type="button"
               className="btn btn-info"
@@ -505,6 +522,7 @@ class SubjectItem extends React.Component {
     let sup = this;
     let subject_code = $("#update_subject_code" + this.props.subject_id).val();
     let subjectc_des = $("#update_subject_des" + this.props.subject_id).val();
+    let class_des = $("#update_class_des" + this.props.subject_id).val();
     $.ajax({
       url: "teachers/functions.php",
       method: "POST",
@@ -512,6 +530,7 @@ class SubjectItem extends React.Component {
         subject_id: sup.props.subject_id,
         subject_code: subject_code,
         subject_des: subjectc_des,
+        class_des:class_des,
         requestType: "updateSubject"
       },
       success: function(data) {
@@ -544,7 +563,7 @@ class SubjectItem extends React.Component {
           }
         >
           <div className="row">
-            <div className="col">
+            <div className="col-sm-6">
               <div className="row m-2">
                 <small className="text-info">Subject Code</small>
               </div>
@@ -552,15 +571,23 @@ class SubjectItem extends React.Component {
                 <h5>{this.props.subject_code}</h5>
               </div>
             </div>
-            <div className="col">
+            <div className="col-sm-6">
               <div className="row m-2">
                 <small className="text-info">Subject Desciption</small>
               </div>
               <div className="row m-2">
-                <h5>{this.props.subject_des}</h5>
+                {this.props.subject_des}
               </div>
             </div>
-            <div className="col d-flex flex-row-reverse">
+            <div className="col-sm-6">
+              <div className="row ml-2 mr-2">
+                <small className="text-info">Class Schedule</small>
+              </div>
+              <div className="row m-2">
+                {this.props.class_des}
+              </div>
+            </div>
+            <div className="col-sm-12 d-flex flex-row-reverse">
               <div className="d-flex align-items-center">
                 <button
                   type="button"
@@ -597,7 +624,7 @@ class SubjectItem extends React.Component {
         {/* update form */}
         <div className={"col-sm-12 " + this.state.updateExtend}>
           <div className="row mt-1 p-2 border rounded">
-            <div className="col p-2">
+            <div className="col-sm-6 pl-2 pr-2">
               <div className="row m-2">
                 <small className="text-info">Subject Code </small>
               </div>
@@ -614,7 +641,7 @@ class SubjectItem extends React.Component {
                 </div>
               </div>
             </div>
-            <div className="col p-2">
+            <div className="col-sm-6 pl-2 pr-2">
               <div className="row m-2">
                 <small className="text-info">Subject Desciption </small>
               </div>
@@ -627,6 +654,23 @@ class SubjectItem extends React.Component {
                     id={"update_subject_des" + this.props.subject_id}
                     aria-describedby="emailHelp"
                     placeholder="subject_des"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="col-sm-12 pl-2 pr-2">
+              <div className="row ml-2 mr-2">
+                <small className="text-info">Subject Desciption </small>
+              </div>
+              <div className="row m-2">
+                <div className="form-group w-100">
+                  <input
+                    type="text"
+                    defaultValue={this.props.class_des}
+                    className="form-control"
+                    id={"update_class_des" + this.props.subject_id}
+                    aria-describedby="emailHelp"
+                    placeholder="Class Description"
                   />
                 </div>
               </div>

@@ -32,7 +32,8 @@ if ($requestType == "updateSubject"){
     $subject_id = mysqli_real_escape_string($connect,$_POST['subject_id']);
     $subject_code = mysqli_real_escape_string($connect,$_POST['subject_code']);
     $subject_des = mysqli_real_escape_string($connect,$_POST['subject_des']);
-    $sql = "update subjects set subject_code = '$subject_code', subject_des = '$subject_des' where subject_id = $subject_id ";
+    $class_des = mysqli_real_escape_string($connect,$_POST['class_des']);
+    $sql = "update subjects set subject_code = '$subject_code', subject_des = '$subject_des' ,class_des = '$class_des' where subject_id = $subject_id ";
     if(mysqli_query($connect,$sql)) 
     {
         echo 'success';

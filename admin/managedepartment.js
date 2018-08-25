@@ -265,7 +265,7 @@ class DepartmentItem extends React.Component {
                 type="button"
                 className="btn btn-outline-secondary"
               >
-                Add Course
+                Add Program
               </button>
             </div>
             <div className={"col-sm-9 " + this.state.addCourseInputLayout}>
@@ -277,7 +277,7 @@ class DepartmentItem extends React.Component {
                       className="form-control"
                       id={"course" + this.props.department_id}
                       aria-describedby="emailHelp"
-                      placeholder="Enter Course Name"
+                      placeholder="Enter Program Name"
                     />
                   </div>
                 </div>
@@ -294,7 +294,7 @@ class DepartmentItem extends React.Component {
             </div>
           </div>
           <div className="row p-3">
-            <h5>Courses</h5>
+            <h5>Programs</h5>
           </div>
           <div
             id={"courseContainer" + this.props.department_id}
@@ -507,7 +507,7 @@ class CourseItem extends React.Component {
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title" id="exampleModalLabel">
-                  Update Course
+                  Update Program
                 </h5>
                 <button
                   type="button"
@@ -570,7 +570,7 @@ class CourseItem extends React.Component {
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title" id="exampleModalLabel">
-                  Delete Course
+                  Delete Program
                 </h5>
                 <button
                   type="button"
