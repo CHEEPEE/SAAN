@@ -8,15 +8,16 @@ $student_id= mysqli_real_escape_string($connect,$_POST['student_id']);
 $f_name= mysqli_real_escape_string($connect,$_POST['f_name']);
 $m_name= mysqli_real_escape_string($connect,$_POST['m_name']);
 $l_name= mysqli_real_escape_string($connect,$_POST['l_name']);
+$suffix= mysqli_real_escape_string($connect,$_POST['suffix']);
 
 $parent_name= mysqli_real_escape_string($connect,$_POST['parent_name']);
 $parent_number= mysqli_real_escape_string($connect,$_POST['parent_number']);
 $parent_email= mysqli_real_escape_string($connect,$_POST['parent_email']);
 
 
-$query = "INSERT INTO students(student_id,f_name,m_name,l_name,
+$query = "INSERT INTO students(student_id,f_name,m_name,l_name,suffix,
 department_id,course_id,year_level,parent_name,parent_number,parent_email) 
-VALUES ($student_id,'$f_name','$m_name','$l_name',
+VALUES ($student_id,'$f_name','$m_name','$l_name','$suffix'
 $department_id,$course_id,$year_level,'$parent_name','$parent_number','$parent_email')";
 if(mysqli_query($connect,$query)) 
 {

@@ -38,7 +38,7 @@ function getTeachers() {
       teacher_name: teacherName
     },
     success: function(data) {
-      console.log(data);
+      
       var listItem = JSON.parse(data).map(object => (
         <TeacherItem
           id={object.teacher_id}
@@ -100,7 +100,7 @@ class MainRoot extends React.Component {
         teacher_id: teacher_id
       },
       success: function(data) {
-        console.log(data);
+       
         var listItem = JSON.parse(data).map(object => (
           <SubjectItem
             id={object.subject_id}
@@ -140,6 +140,7 @@ class SubjectItem extends React.Component {
   manageSubjectAbsents() {
     ReactDOM.render(
       <ManageSubjectAbsents
+        subject_id = {this.props.subject_id}
         subject_code={this.props.subject_code}
         teacher_id={this.props.teacher_id}
         teacher_name={this.props.teacher_name}
@@ -202,7 +203,7 @@ function getSubjects(teacher_id, teacher_name) {
       teacher_id: teacher_id
     },
     success: function(data) {
-      console.log(data);
+      
       var listItem = JSON.parse(data).map(object => (
         <SubjectItem
           id={object.subject_id}
@@ -229,6 +230,7 @@ class ManageSubjectAbsents extends React.Component {
   getStudentS() {
     let student_id = $("#student_id").val();
     let teacher_id = this.props.teacher_id;
+    let subject_id = this.props.subject_id;
     $.ajax({
       type: "post",
       url: "sidenav/function.php",
@@ -238,7 +240,7 @@ class ManageSubjectAbsents extends React.Component {
         teacher_id: teacher_id
       },
       success: function(data) {
-        console.log(data);
+      
         var listItem = JSON.parse(data).map(object => (
           <StudentItem
             id={object.student_id}
@@ -246,7 +248,8 @@ class ManageSubjectAbsents extends React.Component {
             student_fname = {object.f_name}
             student_mname = {object.m_name}
             student_lname = {object.l_name}
-
+            teacher_id = {teacher_id}
+            subject_id = {subject_id}
           />
         ));
         ReactDOM.render(
@@ -319,11 +322,21 @@ class ManageSubjectAbsents extends React.Component {
 
 class StudentItem extends React.Component {
   state = {};
+  getStudent(){
+    ReactDOM.render(
+      <StudentSetAbsent props ={this.props} teacher_id = {this.props.teacher_id} subject_id = {this.props.teacher_id}/>,  document.getElementById("resultsRow")
+    )
+  }
   render() {
     return (
-      <div className="list-group-item list-group-item-action list-group-item-light p-3 mt-2 border-0">
+      <div className="list-group-item list-group-item-action list-group-item-light p-3 mt-2 border-0" onClick = {this.getStudent.bind(this)}>
         <div className="row">
-        <div className="col text-info font-weight-bold">
+         <div className="col text-info font-weight-bold">
+            <small className="text-muted">Student ID</small>
+            <br />
+            {this.props.id}
+          </div>
+          <div className="col text-info font-weight-bold">
             <small className="text-muted">Last Name</small>
             <br />
             {this.props.student_lname}
@@ -338,31 +351,166 @@ class StudentItem extends React.Component {
             <br />
             {this.props.student_mname}
           </div>
-        
-        
-          {/* <div className="col text-info font-weight-bold">
-            <small className="text-muted">Course Description</small>
-            <br />
-            {this.props.subject_des}
-          </div>
-        </div>
-        <div className="row mt-1">
-          <div className="col text-info font-weight-bold">
-            <small className="text-muted">Class Schedule</small>
-            <br />
-            {this.props.class_des}
-          </div>
-          <div className="col">
-            <button
-              type="button"
-              onClick={this.manageSubjectAbsents.bind(this)}
-              class="btn m-3 btn-info text-white"
-            >
-              Manage
-            </button>
-          </div> */}
         </div>
       </div>
     );
   }
 }
+
+class StudentSetAbsent extends React.Component {
+  state = {  }
+  
+  saveAbsent() {
+    let absent_date = $("#absentDate").val();
+    let absentValue = $("#absentValue").val();
+    let student_id = this.props.props.id;
+    let subject_id = this.props.subject_id;
+    let teacher_id = this.props.teacher_id;
+    let time_stamp ="testtimestamp";
+    const sup = this;
+    $.ajax({
+      url: "sidenav/function.php",
+      method: "POST",
+      data: {
+        requestType:"addAbsent",
+        student_id: student_id,
+        teacher_id: teacher_id,
+        subject_id:subject_id,
+        absent_date:absent_date,
+        time_stamp:time_stamp,
+        absentValue:absentValue
+      },
+      success: function(data) {
+      console.log(data);
+      }
+    });
+    this.fetchAbsents();
+
+  }
+
+  fetchAbsents(){
+    let student_id = this.props.props.id;
+    let subject_id = this.props.subject_id;
+    let teacher_id = this.props.teacher_id;
+    const sup = this;
+    $.ajax({
+      url: "sidenav/function.php",
+      method: "POST",
+      data: {
+        requestType:"getAbsents",
+        student_id: student_id,
+        teacher_id: teacher_id,
+        subject_id:subject_id,
+
+      },
+      success: function(data) {
+        var listItem = JSON.parse(data).map(object => (
+          <AbsentsItem
+            key  = {object.absent_id}
+            date = {object.absent_date}
+            value = {object.absent_value}
+          />
+        ));
+        ReactDOM.render(
+          <div className="shadow w-100 list-group bg-white m-1 mt-3 p-3 rounded">{listItem}</div>,
+          document.getElementById("summaryList")
+        );
+      }
+    });
+  }
+  componentDidMount(){
+    this.fetchAbsents();
+  }
+  render() { 
+    return ( 
+      <div className="container-fluid p-3 mt-2 border-0">
+      <div className="row">
+       <div className="col text-info font-weight-bold">
+          <small className="text-muted">Student ID</small>
+          <br />
+          {this.props.props.id}
+        </div>
+        <div className="col text-info font-weight-bold">
+          <small className="text-muted">Last Name</small>
+          <br />
+          {this.props.props.student_lname}
+        </div>
+        <div className="col text-info font-weight-bold">
+          <small className="text-muted">First Name</small>
+          <br />
+          {this.props.props.student_fname}
+        </div>
+        <div className="col text-info font-weight-bold">
+          <small className="text-muted">Middle Name</small>
+          <br />
+          {this.props.props.student_mname}
+        </div>
+      </div>
+      <div className = "row mt-2">
+      <div className = "col">
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text">Set Absent Date</span>
+         
+        </div>
+        <input type="date" class="form-control" id ="absentDate"/>
+      </div>
+      </div>
+      <div className = "col">
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <label class="input-group-text" for="inputGroupSelect01">Type</label>
+          </div>
+          <select class="custom-select" id="absentValue">
+            <option selected>Choose</option>
+            <option value="1.5">Absent</option>
+            <option value="0.5">Late</option>
+          </select>
+        </div>
+      </div>
+      <div className = "col">
+      <button type="button" onClick = {this.saveAbsent.bind(this)} class="btn btn-info">Confirm</button>
+      </div>
+      </div>
+      <div className = "row">
+        <div className = "col-sm-12">
+          <small className= "text-muted">Summary</small>
+        </div>
+        <div className = "col-sm-12">
+        <div className = "row ml-2 rounded p-2 mr-2 bg-info text-white">
+            <div className = "col ">
+            Date
+            </div>
+            <div className = "col">
+            Date Value
+            </div>
+          </div>
+        </div>
+        <div className = "col-sm-12" id = "summaryList">
+          <div className = "list-group">
+
+          </div>
+        </div>
+      </div>
+    </div>
+     );
+  }
+}
+
+class AbsentsItem extends React.Component {
+  state = {  }
+  render() { 
+    return ( <div class="list-group-item border-0 rounded m-1 bg-light">
+              <div className = "row">
+                <div className = "col">
+                {this.props.date}
+                </div>
+                <div className = "col">
+                {this.props.value} hrs
+                </div>
+              </div>
+             </div>
+  );
+  }
+}
+ 

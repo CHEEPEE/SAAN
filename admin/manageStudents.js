@@ -66,6 +66,7 @@ class ManageStudents extends React.Component {
     let f_name = $("#f_name").val();
     let m_name = $("#m_name").val();
     let l_name = $("#l_name").val();
+    let suffix = $("#suffix").val();
 
     let parent_name = $("#parent_name").val();
     let parent_number = $("#parent_number").val();
@@ -82,6 +83,7 @@ class ManageStudents extends React.Component {
         f_name: f_name,
         m_name: m_name,
         l_name: l_name,
+        suffix:suffix,
         parent_name: parent_name,
         parent_number: parent_number,
         parent_email: parent_email
@@ -102,12 +104,13 @@ class ManageStudents extends React.Component {
 
   fetchStudents() {
     let sup = this;
+    try{
     setInterval(function() {
     $.ajax({
       type: "Post",
       url: "students/fetchStudents.php",
       success: function(data) {
-      
+       
         var listItem = JSON.parse(data).map(function(object, index) {
           return (
             <StudentItem
@@ -122,10 +125,10 @@ class ManageStudents extends React.Component {
               parent_number = {object.parent_number}
               parent_email = {object.parent_email}
               parent_name = {object.parent_name}
-
             />
           );
         });
+        
         ReactDOM.render(
           <React.Fragment>{listItem}</React.Fragment>,
           document.getElementById("studentListContainer")
@@ -134,6 +137,9 @@ class ManageStudents extends React.Component {
       }
     });
   },1000);
+}catch (e){
+ 
+}
   }
 
   changeInserStudentState() {
@@ -212,7 +218,7 @@ class ManageStudents extends React.Component {
             </div>
           </div>
 
-          <div className="col-sm-3">
+          <div className="col-sm-2">
             <div className="form-group w-100">
               <input
                 id="student_id"
@@ -253,6 +259,17 @@ class ManageStudents extends React.Component {
                 className="form-control"
                 aria-describedby="emailHelp"
                 placeholder="Last Name"
+              />
+            </div>
+          </div>
+          <div className="col-sm-1">
+            <div className="form-group w-100">
+              <input
+                id="suffix"
+                type="text"
+                className="form-control"
+                aria-describedby="emailHelp"
+                placeholder="Suffix"
               />
             </div>
           </div>
@@ -327,8 +344,8 @@ class ManageStudents extends React.Component {
             <div className="row mt-3">
               <div className="mt-3 mr-3 ml-3 list-group-item text-white font-weight-bold list-group-item-action border-0 bg-info">
                 <div className="row">
-                  <div className="col-sm-1 plo-3">Student ID</div>
-                  <div className="col-sm-4 pl-3">Student Name</div>
+                  <div className="col-sm-2 plo-3">Student ID</div>
+                  <div className="col-sm-3 pl-3">Student Name</div>
                   <div className="col-sm-3">Department</div>
                   <div className="col-sm-3">Course</div>
                   <div className="col-sm-1">Year Level</div>
@@ -393,8 +410,8 @@ class StudentItem extends React.Component {
           className="mt-2 list-group-item list-group-item-action border-0 bg-light"
         >
           <div className="row">
-            <div className="col-sm-1">{this.props.student_id}</div>
-            <div className="col-sm-4">
+            <div className="col-sm-2">{this.props.student_id}</div>
+            <div className="col-sm-3">
               {this.props.l_name + ", " + this.props.f_name}
             </div>
             <div className="col-sm-3">{this.props.department_name}</div>

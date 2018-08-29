@@ -5,7 +5,7 @@ $result = $connect->query($sql);
 $arrayData = array();
 class myObject
 {
-    public $property1;
+   
 }
 if ($result->num_rows >0) {
   // code...
