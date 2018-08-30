@@ -127,6 +127,128 @@ if ($requestType == "getAbsents"){
 echo json_encode($arrayData);
 }
 
+
+if ($requestType == "checkWarnings"){
+    include '../Database.php';
+    $student_id = mysqli_real_escape_string($connect,$_POST['student_id']);
+    $absent_value = mysqli_real_escape_string($connect,$_POST['absent_value']);
+    $subject_id = mysqli_real_escape_string($connect,$_POST['subject_id']);
+    $sql = "select * from warnings where student_id = $student_id and subject_id = $subject_id";
+    $result = $connect->query($sql);
+    $arrayData = array();
+    class myObject
+    {
+        
+    }
+    if ($result->num_rows >0) {
+    // code...
+        
+     while ($row = $result->fetch_assoc()) {
+        // code...
+        if(updateWarning($student_id,$subject_id,$absent_value)){
+            //if email level is less than warning level send email
+            if($row['email_level'] < getWarningLevel($absent_value)){
+                echo sendWarning($student_id,$subject_id,$absent_value);
+             }
+
+    }
+  
+    }
+    
+}
+else{
+        if(addWarning($student_id,$subject_id,$absent_value)){
+            echo sendWarning($student_id,$subject_id,$absent_value);
+        }
+    }
+}
+if ($requestType == "getWarningLevels"){
+    include '../Database.php';
+    $student_id = mysqli_real_escape_string($connect,$_POST['student_id']);
+    $absent_value = mysqli_real_escape_string($connect,$_POST['absent_value']);
+    $subject_id = mysqli_real_escape_string($connect,$_POST['subject_id']);
+    $sql = "select * from warnings where student_id = $student_id and subject_id = $subject_id";
+    $result = $connect->query($sql);
+    $arrayData = array();
+    class myObject
+    {
+        
+    }
+    if ($result->num_rows >0) {
+        while ($row = $result->fetch_assoc()) {
+            // code...
+            echo $row['warning_level'];
+
+        }
+    // code...
+    }
+    
+}
+
+function addWarning($student_id,$subject_id,$absent){
+    include '../Database.php';
+    session_start(); 
+    $level = getWarningLevel($absent);
+    $query = "INSERT INTO warnings(student_id,warning_level,subject_id
+    ) 
+    VALUES ($student_id,$level,$subject_id)";
+    if(mysqli_query($connect,$query)) 
+    {
+        return true;
+    }else {
+        return "Error: " . $query . "<br>" . $connect->error;
+    }
+}
+function updateWarning($student_id,$subject_id,$absent){
+    include '../Database.php';
+    $level = getWarningLevel($absent);
+    $query = "update warnings set warning_level = $level 
+    where
+    student_id = $student_id and subject_id = $subject_id";
+    if(mysqli_query($connect,$query)) 
+    {
+        return true;
+    }else {
+        return "Error: " . $query . "<br>" . $connect->error;
+    }
+}
+function updateEmailLevel($student_id,$subject_id,$absent){
+    include '../Database.php';
+    $level = getWarningLevel($absent);
+    $query = "update warnings set email_level = $level 
+    where
+    student_id = $student_id and subject_id = $subject_id";
+    if(mysqli_query($connect,$query)) 
+    {
+        return true;
+    }else {
+        return "Error: " . $query . "<br>" . $connect->error;
+    }
+}
+
+function getWarningLevel($absentHours){
+    if ($absentHours >= 4.5  && $absentHours < 7.5){
+        return 1;
+    }
+    else if ($absentHours >= 7.5 && $absentHours < 10.5){
+        return 2;
+    }
+    else if ($absentHours >= 10.5 && $absentHours <15 ){
+        return 3;
+    }else{
+        return 4;
+    }
+}
+
+
+
+function sendWarning($student_id,$subject_id,$absent){
+   if( updateEmailLevel($student_id,$subject_id,$absent)){
+       return "Email Sent";
+   }
+}
+
+
 function getTeacherDetails($teacherId){
     include '../Database.php';
     $sql = "select * from teachers where teacher_id = $teacherId";
@@ -139,6 +261,8 @@ function getTeacherDetails($teacherId){
       }
     }
 }
+
+
 
 
 function getDepartmentName($department_id){
