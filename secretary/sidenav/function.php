@@ -65,7 +65,7 @@ if ($requestType == "getStudents"){
     session_start();
     $dept_id = $_SESSION["dept_id"];
     $student_id = mysqli_real_escape_string($connect,$_POST['student_id']);
-    $sql = "select * from students where student_id like '$student_id%' and department_id = $dept_id";
+    $sql = "select * from students where (student_id like '$student_id%' or l_name like '%$student_id%') and department_id = $dept_id";
     $result = $connect->query($sql);
     $arrayData = array();
     class myObject
@@ -235,7 +235,7 @@ function getWarningLevel($absentHours){
     }
     else if ($absentHours >= 10.5 && $absentHours <15 ){
         return 3;
-    }else{
+    }else if ($absentHours >= 15){
         return 4;
     }
 }
@@ -243,11 +243,13 @@ function getWarningLevel($absentHours){
 
 
 function sendWarning($student_id,$subject_id,$absent){
-   if( updateEmailLevel($student_id,$subject_id,$absent)){
-       return "Email Sent";
+   
+   if(updateEmailLevel($student_id,$subject_id,$absent)){
+
+        // itexmo(getStudentCredentials($student_id)['parent_number'],textMessage($student_id),"TR-SACAU065476_CA5JZ");
+        return sendMail($student_id);
    }
 }
-
 
 function getTeacherDetails($teacherId){
     include '../Database.php';
@@ -262,9 +264,80 @@ function getTeacherDetails($teacherId){
     }
 }
 
+function itexmo($number,$message,$apicode){
+
+    $url = 'https://www.itexmo.com/php_api/api.php';
+    $itexmo = array('1' => $number, '2' => $message, '3' => $apicode);
+    $param = array(
+        'http' => array(
+            'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+            'method'  => 'POST',
+            'content' => http_build_query($itexmo),
+        ),
+    );
+    $context  = stream_context_create($param);
+    return file_get_contents($url, false, $context);
+}
+
+function textMessage($student_id){
+
+}
+
+function sendMail($student_id){
+    $studentCred = getStudentCredentials($student_id);
+    $parentName = $studentCred['parent_name'];
+    $studentName = $studentCred['l_name'].", ".$studentCred['f_name']. " ". $studentCred['m_name'];
+
+    $to = $studentCred['parent_email'];
+    $subject = "HTML email";
+
+    $message = "
+    <html>
+    <head>
+    <title>St. Anthony's College Automatic Email Sender</title>
+    </head>
+    <body>
+    <p>Dear $parentName,
+
+    This is to inform you that your son/daugther $studentName have accumulated the following absences in this subject
+   
+    Do Come and see me as soon as possible to discuss this matter. Thank you.
+    </p>
+   
+    </body>
+    </html>
+    ";
+
+    // Always set content-type when sending HTML email
+    $headers = "MIME-Version: 1.0" . "\r\n";
+    $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+
+    // More headers
+    $headers .= 'From: <webmaster@example.com>' . "\r\n";
+    $headers .= 'Cc: myboss@example.com' . "\r\n";
+
+    if(mail($to,$subject,$message,$headers)){
+        echo "sent Success";
+    }else{
+        echo "failed";
+    }
+}
 
 
 
+
+function getStudentCredentials($student_id){
+    include '../Database.php';
+    $sql = "select * from students where student_id = $student_id";
+    $result = $connect->query($sql);
+    if ($result->num_rows >0) {
+      // code...
+      while ($row = $result->fetch_assoc()) {
+        // code...
+        return $row;
+      }
+    }
+}
 function getDepartmentName($department_id){
     include '../Database.php';
     $sql = "select * from department where department_id = $department_id";
@@ -277,4 +350,4 @@ function getDepartmentName($department_id){
       }
     }
 }
-  ?>
+?>

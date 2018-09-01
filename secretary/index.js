@@ -300,7 +300,7 @@ class ManageSubjectAbsents extends React.Component {
           <div className="col">
             <div className="form-group">
               <input
-                type="number"
+                type="text"
                 onChange={this.getStudentS.bind(this)}
                 className="form-control"
                 id="student_id"
@@ -308,7 +308,7 @@ class ManageSubjectAbsents extends React.Component {
                 placeholder="Enter Student ID"
               />
               <small id="emailHelp" className="form-text text-info">
-                Search Student ID
+                Search Student ID or Last name
               </small>
             </div>
           </div>
@@ -361,17 +361,19 @@ class StudentItem extends React.Component {
 class StudentSetAbsent extends React.Component {
   state = { 
     absentValue:0,
-    warningLevel: "No Warnings"
+    warningLevel: "No Warnings",
+    absentNumber:0
    }
   
   saveAbsent() {
+   
     let absent_date = $("#absentDate").val();
     let absentValue = $("#absentValue").val();
     let student_id = this.props.props.id;
     let subject_id = this.props.subject_id;
     let teacher_id = this.props.teacher_id;
     let time_stamp ="testtimestamp";
-    const sup = this;
+    let sup = this;
     $.ajax({
       url: "sidenav/function.php",
       method: "POST",
@@ -386,45 +388,18 @@ class StudentSetAbsent extends React.Component {
       },
       success: function(data) {
       console.log(data);
+      sup.fetchAbsents();
+     
       }
     });
-    this.fetchAbsents();
-
   }
-
-  getWarningLevel(){
-    var sup = this;
-    let absent_value = this.state.absentValue;
-    let student_id = this.props.props.id;
-    let subject_id = this.props.subject_id;
-    console.log("checking warning. . .");
-    if(this.state.absentValue >= 3){
-      $.ajax({
-        url: "sidenav/function.php",
-        method: "POST",
-        data: {
-          requestType:"getWarningLevels",
-          student_id: student_id,
-          subject_id:subject_id,
-          absent_value:absent_value
-        },
-        success: function(data) {
-          sup.setState({
-            warningLevel:"Level "+data
-          });
-        }
-      });
-    }
-  }
-
 
   checkWarning(){
     var sup = this;
     let absent_value = this.state.absentValue;
     let student_id = this.props.props.id;
     let subject_id = this.props.subject_id;
-    console.log("checking warning. . .");
-    if(this.state.absentValue >= 3){
+    if(this.state.absentValue >= 4.5){
       $.ajax({
         url: "sidenav/function.php",
         method: "POST",
@@ -435,12 +410,41 @@ class StudentSetAbsent extends React.Component {
           absent_value:absent_value
         },
         success: function(data) {
-         
-          console.log(data);
+          console.log("check Warning "+ data);
         }
       });
     }
   }
+
+
+  getWarningLevel(){
+    let sup = this;
+    let absentHours = this.state.absentValue;
+    sup.setState({
+      absentNumber:parseInt(this.state.absentValue/1.5)
+    })
+    if (absentHours >= 4.5  && absentHours < 7.5){
+      sup.setState({
+        warningLevel:"First Warning"
+      })
+    }
+    else if (absentHours >= 7.5 && absentHours < 10.5){
+      sup.setState({
+        warningLevel:"Second Warning"
+      })
+    }
+    else if (absentHours >= 10.5 && absentHours <15 ){
+      sup.setState({
+        warningLevel:"Third Warning"
+      })
+    }else if (absentHours >= 15){
+      sup.setState({
+        warningLevel:"Droped"
+      })
+    }
+  }
+
+
 
   fetchAbsents(){
     let student_id = this.props.props.id;
@@ -472,13 +476,13 @@ class StudentSetAbsent extends React.Component {
         sup.setState({
           absentValue:totalHourseAbset
         })
+        sup.checkWarning();
+        sup.getWarningLevel();
         ReactDOM.render(
           <div className="shadow w-100 list-group bg-white m-1 mt-3 p-3 rounded">{listItem}</div>,
           document.getElementById("summaryList")
         );
-        console.log(sup.state.absentValue);
-        sup.checkWarning();
-        sup.getWarningLevel();
+       
       }
     });
 
@@ -556,7 +560,7 @@ class StudentSetAbsent extends React.Component {
             Total Absent
             </div>
             <div className = "row text-danger  pl-3">
-            <h3> {this.state.absentValue} Hours</h3>
+            <h3>{this.state.absentNumber} absents ({this.state.absentValue} Hours)</h3>
             </div>
             </div>
         </div>
