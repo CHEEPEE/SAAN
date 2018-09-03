@@ -18,6 +18,7 @@ if ($result->num_rows >0) {
     $student->m_name = $row['m_name'];
     $student->l_name = $row['l_name'];
     $student->student_id = $row['student_id'];
+    $student->suffix = $row['suffix'];
     $student->parent_name = $row['parent_name'];
     $student->parent_number = $row['parent_number'];
     $student->parent_email = $row['parent_email'];

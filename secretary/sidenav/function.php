@@ -314,7 +314,7 @@ function sendMail($student_id){
 
     // More headers
     $headers .= 'From: <webmaster@example.com>' . "\r\n";
-    $headers .= 'Cc: myboss@example.com' . "\r\n";
+    $headers .= "Cc: $to" . "\r\n";
 
     if(mail($to,$subject,$message,$headers)){
         echo "sent Success";

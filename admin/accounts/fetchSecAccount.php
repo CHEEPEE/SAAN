@@ -13,7 +13,10 @@ if ($result->num_rows >0) {
     // code...
 
     $account_details_object = new myObject();
+
     $account_details_object->account_name = $row['account_name'];
+    $account_details_object->username = $row['username'];
+    $account_details_object->password = $row['password'];
     $account_details_object->department_name = getDepartmentName( $row['department_id']);
     $account_details_object->userid = $row['userid'];
     $arrayData[]=$account_details_object;

@@ -56,9 +56,10 @@ class ManageTeachers extends React.Component {
       },
       success: function(data) {
         $("#teacher_name").val("");
+        sup.fetchTeacher();
       }
     });
-    this.fetchTeacher();
+   
   }
   componentDidMount() {
     this.chooseDepartment();
@@ -237,9 +238,10 @@ class TeacherItem extends React.Component {
       },
       success: function(data) {
         console.log(data);
+        fetchTeacher();
       }
     });
-    fetchTeacher();
+   
   }
 
   componentDidMount() {}

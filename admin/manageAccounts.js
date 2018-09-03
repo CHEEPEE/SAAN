@@ -1,5 +1,27 @@
 function manageAccoutRoot() {
+  ReactDOM.unmountComponentAtNode(root);
   ReactDOM.render(<ManageAccout />, root);
+}
+
+function getSecretaryAccounts(){
+   $.ajax({
+      type: "Post",
+      url: "accounts/fetchSecAccount.php",
+      success: function(data) {
+        var listItem = JSON.parse(data).map(object => (
+          <SecretaryAccoutsItem
+            key={object.userid}
+            objectData = {object}
+            account_name={object.account_name}
+            department_name={object.department_name}
+          />
+        ));
+        ReactDOM.render(
+          <React.Fragment>{listItem}</React.Fragment>,
+          document.getElementById("secretaryAccountContainer")
+        );
+      }
+    });
 }
 class ManageAccout extends React.Component {
   constructor(props) {
@@ -31,23 +53,7 @@ class ManageAccout extends React.Component {
   }
 
   getSecretaryAccounts() {
-    $.ajax({
-      type: "Post",
-      url: "accounts/fetchSecAccount.php",
-      success: function(data) {
-        var listItem = JSON.parse(data).map(object => (
-          <SecretaryAccoutsItem
-            key={object.userid}
-            account_name={object.account_name}
-            department_name={object.department_name}
-          />
-        ));
-        ReactDOM.render(
-          <React.Fragment>{listItem}</React.Fragment>,
-          document.getElementById("secretaryAccountContainer")
-        );
-      }
-    });
+   getSecretaryAccounts();
   }
 
   componentDidMount() {
@@ -173,8 +179,8 @@ class ManageAccout extends React.Component {
           <div id="myAccountContainer" className="row" />
         </div>
         {/* second column */}
-        <div className="col p-3" id = "detailsContainer">
-        nothing to show yet
+        <div className="col p-3" id="detailsContainer">
+          nothing to show yet
         </div>
       </div>
     );
@@ -192,26 +198,58 @@ class DepartmentOptions extends React.Component {
 }
 
 class SecretaryAccoutsItem extends React.Component {
+  updateAccount() {
+    let detailsContainer = document.querySelector("#detailsContainer");
+    ReactDOM.render(<UpdateSecretaryAccount key = {this.props.objectData.userid} objectData = {this.props.objectData}/>, detailsContainer);
+  }
+
+  removeAccountConfirmation(){
+    
+    if (confirm('Are you sure you want remove this Account?')) {
+          // Save it!
+      this.removeAccount();
+      } else {
+          // Do nothing!
+      }
+  }
+  removeAccount(){
+    $.ajax({
+      url: "functions/functions.php",
+      method: "POST",
+      data: {
+        requestType:"removeAccount",
+        account_id:this.props.objectData.userid,
+      },
+      success: function(data) {
+        console.log(data);
+        let detailsContainer = document.querySelector("#detailsContainer");
+    ReactDOM.render(
+      <React.Fragment>
+        Account Removed
+      </React.Fragment>,
+    detailsContainer);
+      getSecretaryAccounts();
+      }
+    });
+  }
   render() {
     return (
       <React.Fragment>
         <div className="mt-2 list-group-item p-3 list-group-item-action shadow-sm border-0 bg-white ">
           <div className="row">
             <div className="flex-grow-1 p-3">
-              <div className="row font-weight-bold pl-3 text-info">{this.props.account_name}</div>
+              <div className="row font-weight-bold pl-3 text-info">
+                {this.props.account_name}
+              </div>
               <div className="row pl-3">{this.props.department_name}</div>
             </div>
             <div className="p-3">
-              <div className = "">
+              <div className="">
                 <button
                   type="button"
                   class="btn btn-outline-info mr-3"
                   data-toggle="modal"
-                  data-target={
-                    "#updateCourseModal" +
-                    this.props.course_id +
-                    this.props.department_id
-                  }
+                  onClick={this.updateAccount.bind(this)}
                 >
                   Update
                 </button>
@@ -219,20 +257,119 @@ class SecretaryAccoutsItem extends React.Component {
                   type="button"
                   class="btn btn-outline-danger"
                   data-toggle="modal"
-                  data-target={
-                    "#deleteCourseModal" +
-                    this.props.course_id +
-                    this.props.department_id
-                  }
+                  onClick = {this.removeAccountConfirmation.bind(this)}
                 >
                   Remove
                 </button>
-                </div>
-           
+              </div>
             </div>
           </div>
         </div>
       </React.Fragment>
+    );
+  }
+}
+
+class UpdateSecretaryAccount extends React.Component {
+  state = {
+    showPassword:"password"
+  };
+
+  updateAccountDetails(){
+    let account_name = $("#account_name").val();
+    let username = $("#update_username").val();
+    let password = $("#update_password").val();
+   
+    $.ajax({
+      url: "functions/functions.php",
+      method: "POST",
+      data: {
+        requestType:"updateAccount",
+        account_id:this.props.objectData.userid,
+        account_name: account_name,
+        password: password,
+        username: username,
+      },
+      success: function(data) {
+        console.log(data);
+        let detailsContainer = document.querySelector("#detailsContainer");
+    ReactDOM.render(
+      <React.Fragment>
+        Account Updated Succesfully
+      </React.Fragment>,
+    detailsContainer);
+        getSecretaryAccounts();
+      }
+    });
+  }
+
+  showPassword(){
+    this.setState({
+      showPassword:this.state.showPassword == "password"?"text":"password"
+    })
+  }
+
+  render() {
+    return (
+      <div className="container-fluid rounded bg-white shadow p-3">
+        <div className="row mb-2">
+          <div className="col">
+            <h5>Update Account</h5>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-sm-12">
+            <div className="form-group w-100">
+              <input
+                id="account_name"
+                type="text"
+                defaultValue = {this.props.objectData.account_name}
+                className="form-control"
+                aria-describedby="emailHelp"
+                placeholder="Login Username"
+              />
+            </div>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-sm-12">
+            <div className="form-group w-100">
+              <input
+                id="update_username"
+                type="text"
+                defaultValue = {this.props.objectData.username}
+                className="form-control"
+                aria-describedby="emailHelp"
+                placeholder="Login Username"
+              />
+            </div>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-sm-12">
+            <div className="form-group w-100">
+              <input
+                id="update_password"
+                type={this.state.showPassword}
+                defaultValue = {this.props.objectData.password}
+                className="form-control"
+                aria-describedby="emailHelp"
+                placeholder="Login Username"
+              />
+           
+            </div>
+            <div className="form-group form-check">
+              <input onChange = {this.showPassword.bind(this)} type="checkbox" class="form-check-input" id="exampleCheck1"/>
+              <label className="form-check-label" for="exampleCheck1">Show Password</label>
+            </div>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col">
+          <button onClick = {this.updateAccountDetails.bind(this)} type="button" class="btn w-100 btn-info">Save Changes</button>
+          </div>
+        </div>
+      </div>
     );
   }
 }

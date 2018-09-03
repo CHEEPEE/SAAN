@@ -17,7 +17,7 @@ $parent_email= mysqli_real_escape_string($connect,$_POST['parent_email']);
 
 $query = "INSERT INTO students(student_id,f_name,m_name,l_name,suffix,
 department_id,course_id,year_level,parent_name,parent_number,parent_email) 
-VALUES ($student_id,'$f_name','$m_name','$l_name','$suffix'
+VALUES ($student_id,'$f_name','$m_name','$l_name','$suffix',
 $department_id,$course_id,$year_level,'$parent_name','$parent_number','$parent_email')";
 if(mysqli_query($connect,$query)) 
 {

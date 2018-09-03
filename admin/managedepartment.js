@@ -1,5 +1,25 @@
 const root = document.getElementById("mainRoot");
 
+function getDepartments(){
+  var deparmentsContainer = document.getElementById("deparmentsContainer");
+  $.ajax({
+    type: "Post",
+    url: "department/fetchDepartment.php",
+    success: function(data) {
+      var listItem = JSON.parse(data).map(object => (
+        <DepartmentItem
+          key={object.department_id}
+          department_id={object.department_id}
+          departmentname={object.department_name}
+        />
+      ));
+      ReactDOM.render(
+        <ul className="list-group w-100">{listItem}</ul>,
+        deparmentsContainer
+      );
+    }
+  });
+}
 class ManageDepartment extends React.Component {
   constructor(props) {
     super(props);
@@ -10,30 +30,12 @@ class ManageDepartment extends React.Component {
     };
   }
   componentDidMount() {
-    var deparmentsContainer = document.getElementById("deparmentsContainer");
+  
     this.getDepartments();
   }
   getDepartments() {
-    const sup = this;
-    setInterval(function() {
-      $.ajax({
-        type: "Post",
-        url: "department/fetchDepartment.php",
-        success: function(data) {
-          var listItem = JSON.parse(data).map(object => (
-            <DepartmentItem
-              key={object.department_id}
-              department_id={object.department_id}
-              departmentname={object.department_name}
-            />
-          ));
-          ReactDOM.render(
-            <ul className="list-group w-100">{listItem}</ul>,
-            deparmentsContainer
-          );
-        }
-      });
-    }, 1000); //time in milliseconds
+   
+  getDepartments();
   }
   changeAddDepartmentState() {
     this.setState({
@@ -57,6 +59,7 @@ class ManageDepartment extends React.Component {
       success: function(data) {
         $("#department_name").val("");
         sup.changeAddDepartmentState();
+        getDepartments();
       }
     });
   }
@@ -164,8 +167,10 @@ class DepartmentItem extends React.Component {
       },
       success: function(data) {
         if (data == "success") {
+         getDepartments();
         } else {
           console.log(data);
+          getDepartments();
         }
       }
     });
@@ -214,6 +219,7 @@ class DepartmentItem extends React.Component {
           $(
             "#removeDepartmentModal" + sup.props.department_id
           ).modal("hide");
+          getDepartments();
         } else {
           console.log(data);
         }
