@@ -537,6 +537,46 @@ class StudentItem extends React.Component {
       }
     });
   }
+
+  upddateStudentInfo(){
+    let f_name = $("#f_name"+this.props.student_id).val();
+    let l_name = $("#l_name"+this.props.student_id).val();
+    let m_name = $("#m_name"+this.props.student_id).val();
+    let suffix = $("#suffix"+this.props.student_id).val();
+    let parent_name =$("#parent_name"+this.props.student_id).val();
+    let parent_email = $("#parent_email"+this.props.student_id).val();
+    let parent_number = $("#parent_number"+this.props.student_id).val();
+    let department_id = $("#updateDepartment"+this.props.student_id).val();
+    let year_level = $("#updateYearLevel"+this.props.student_id).val();
+    let course_id = $("#updateCourseContainer"+this.props.student_id).val();
+    let student_id  = this.props.student_id;
+    let sup = this;
+
+    $.ajax({
+      url: "students/function.php",
+      method: "POST",
+      data: {
+        requestType:"updateStudent",
+        department_id: department_id,
+        course_id: course_id,
+        year_level: year_level,
+        student_id: student_id,
+        f_name: f_name,
+        m_name: m_name,
+        l_name: l_name,
+        suffix: suffix,
+        parent_name: parent_name,
+        parent_number: parent_number,
+        parent_email: parent_email
+      },
+      success: function(data) {
+        console.log(data);
+        fetchStudents();
+        sup.extendState();
+        $("#updateStudentModal" + sup.props.student_id).modal('hide');
+      }
+    });
+  }
   render() {
     return (
       <React.Fragment>
@@ -676,7 +716,7 @@ class StudentItem extends React.Component {
                       <input
                         type="text"
                         class="form-control"
-                        id="exampleInputEmail1"
+                        id={"l_name"+this.props.student_id}
                         defaultValue={this.props.l_name}
                       />
                     </div>
@@ -687,7 +727,7 @@ class StudentItem extends React.Component {
                       <input
                         type="text"
                         className="form-control"
-                        id="exampleInputEmail1"
+                        id={"f_name"+this.props.student_id}
                         defaultValue={this.props.f_name}
                       />
                     </div>
@@ -698,7 +738,7 @@ class StudentItem extends React.Component {
                       <input
                         type="text"
                         className="form-control"
-                        id="exampleInputEmail1"
+                        id={"m_name"+this.props.student_id}
                         defaultValue={this.props.m_name}
                       />
                     </div>
@@ -709,7 +749,7 @@ class StudentItem extends React.Component {
                       <input
                         type="text"
                         className="form-control"
-                        id="exampleInputEmail1"
+                        id={"suffix"+this.props.student_id}
                         defaultValue={this.props.suffix}
                       />
                     </div>
@@ -781,7 +821,7 @@ class StudentItem extends React.Component {
                       <input
                         type="text"
                         class="form-control"
-                        id="exampleInputEmail1"
+                        id={"parent_name"+this.props.student_id}
                         defaultValue={this.props.parent_name}
                       />
                     </div>
@@ -792,7 +832,7 @@ class StudentItem extends React.Component {
                       <input
                         type="text"
                         class="form-control"
-                        id="exampleInputEmail1"
+                        id={"parent_number"+this.props.student_id}
                         defaultValue={this.props.parent_number}
                       />
                     </div>
@@ -803,7 +843,7 @@ class StudentItem extends React.Component {
                       <input
                         type="text"
                         class="form-control"
-                        id="exampleInputEmail1"
+                        id={"parent_email"+this.props.student_id}
                         defaultValue={this.props.parent_email}
                       />
                     </div>
@@ -820,7 +860,7 @@ class StudentItem extends React.Component {
                 >
                   Close
                 </button>
-                <button type="button" className="btn btn-primary">
+                <button type="button" onClick = {this.upddateStudentInfo.bind(this)} className="btn btn-primary">
                   Save changes
                 </button>
               </div>

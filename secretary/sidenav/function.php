@@ -246,7 +246,7 @@ function sendWarning($student_id,$subject_id,$absent){
    
    if(updateEmailLevel($student_id,$subject_id,$absent)){
 
-        // itexmo(getStudentCredentials($student_id)['parent_number'],textMessage($student_id),"TR-SACAU065476_CA5JZ");
+        echo itexmo(getStudentCredentials($student_id)['parent_number'],textMessage($student_id),"TR-SACAU065476_CA5JZ");
         return sendMail($student_id);
    }
 }
@@ -280,7 +280,7 @@ function itexmo($number,$message,$apicode){
 }
 
 function textMessage($student_id){
-
+    return getStudentCredentials($student_id)['f_name'];
 }
 
 function sendMail($student_id){
