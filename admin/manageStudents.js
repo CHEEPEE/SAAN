@@ -2,11 +2,23 @@ function manageStudents() {
   ReactDOM.render(<ManageStudents />, root);
 }
 
-function fetchStudents() {
+function fetchStudents(department_id, yearLevel, courseId,searchStudent) {
+  department_id = isNaN(department_id) ? "NaN" : department_id;
+  yearLevel = isNaN(yearLevel) ? "NaN" : yearLevel;
+  courseId = isNaN(courseId) ? "NaN" : courseId;
+  searchStudent = searchStudent == null? "":searchStudent;
+
   $.ajax({
     type: "Post",
     url: "students/fetchStudents.php",
+    data: {
+      department_id: department_id,
+      year_level: yearLevel,
+      course_id: courseId,
+      search:searchStudent
+    },
     success: function(data) {
+      console.log(data);
       var listItem = JSON.parse(data).map(function(object, index) {
         return (
           <StudentItem
@@ -88,6 +100,67 @@ class ManageStudents extends React.Component {
     });
   }
 
+  filterDepartmentItems() {
+    let sup = this;
+    $.ajax({
+      type: "Post",
+      url: "department/fetchDepartment.php",
+      success: function(data) {
+        console.log("choose department " + data);
+        var listItem = JSON.parse(data).map(object => (
+          <OptionItem
+            key={object.department_id}
+            optionValue={object.department_id}
+            optionName={object.department_name}
+          />
+        ));
+        ReactDOM.render(
+          <React.Fragment>
+            <OptionItem key={0} optionValue={"dept"} optionName={"Department"} />
+            {listItem}
+          </React.Fragment>,
+          document.getElementById("filterByDepartment")
+        );
+      }
+    });
+  }
+  filterCourse() {
+    let department_id = $("#filterByDepartment").val();
+    $.ajax({
+      type: "Post",
+      url: "department/fetchCourse.php",
+      data: { department_id: department_id },
+      success: function(data) {
+        var listItem = JSON.parse(data).map(object => (
+          <OptionItem
+            key={object.course_id}
+            optionValue={object.course_id}
+            optionName={object.course_name}
+          />
+        ));
+        ReactDOM.render(
+          <React.Fragment>
+           <OptionItem
+          key={"nah"}
+          optionValue={"n/a"}
+          optionName={"Filter Program"}
+        />
+          {listItem}</React.Fragment>,
+          document.getElementById("filterByCourse")
+        );
+      }
+    });
+  }
+
+  getfilterOnChange() {
+    var filterDepartment = $("#filterByDepartment").val();
+    var filterByYearLevel = $("#filterByYearLevel").val();
+    var filterByCourse = $("#filterByCourse").val();
+    var searchStudent = $("#searchStudent").val();
+    fetchStudents(filterDepartment, filterByYearLevel, filterByCourse,searchStudent);
+    this.filterCourse();
+  }
+
   insertStudent() {
     let sup = this;
     let department_id = $("#dropdownDepartment").val();
@@ -147,6 +220,7 @@ class ManageStudents extends React.Component {
   componentDidMount() {
     this.chooseDepartment();
     this.fetchStudents();
+    this.filterDepartmentItems();
   }
   render() {
     return (
@@ -207,6 +281,7 @@ class ManageStudents extends React.Component {
                 <option value="3">Third Year</option>
                 <option value="4">Fourth Year</option>
                 <option value="5">Fifth Year</option>
+                
               </select>
               <div class="input-group-append">
                 <label class="input-group-text" for="inputGroupSelect02">
@@ -326,19 +401,33 @@ class ManageStudents extends React.Component {
             <h3>Student List </h3>
           </div>
           <div className="col-2">
-            <select class="form-control form-control-sm" id="selectDepartment">
+            <select
+              onChange={this.getfilterOnChange.bind(this)}
+              class="form-control form-control-sm"
+              id="filterByDepartment"
+            >
               <option>Departments</option>
             </select>
           </div>
           <div className="col-2">
-            <select class="form-control form-control-sm" id="selectCourses">
-              <option>Courses</option>
+            <select class="form-control form-control-sm" onChange = {this.getfilterOnChange.bind(this)} id="filterByCourse">
+              <option>Program</option>
             </select>
           </div>
           <div className="col-2">
-            <select class="form-control form-control-sm" id="selectYearLevel">
-              <option>Year Level</option>
+            <select class="form-control form-control-sm" onChange = {this.getfilterOnChange.bind(this)} id="filterByYearLevel">
+              <option value="na">Year Level</option>
+              <option value={1}>First Year</option>
+              <option value={2}>Second Year</option>
+              <option value={3}>Third Year</option>
+              <option value={4}>Fourth Year</option>
+              <option value={4}>Fifth Year</option>
             </select>
+          </div>
+          <div className = "col-sm-5">
+          <div class="form-group">
+            <input type="text" className="form-control" defaultValue = {""} onChange = {this.getfilterOnChange.bind(this)} id="searchStudent" placeholder="Enter Student Here"/>
+          </div>
           </div>
           {/* end student filter */}
           <div className="col-sm-12">
@@ -393,7 +482,7 @@ class StudentItem extends React.Component {
   componentDidMount() {
     this.getCourse();
     this.getDepartment();
-   this.getYearLevel();
+    this.getYearLevel();
   }
   getDepartment() {
     let sup = this;
@@ -401,14 +490,13 @@ class StudentItem extends React.Component {
       type: "Post",
       url: "department/fetchDepartment.php",
       success: function(data) {
-
         var selected = JSON.parse(data).map(function(object, index) {
           if (object.department_id == sup.props.department_id) {
             return (
               <OptionItem
-              key={object.department_id}
-              optionValue={object.department_id}
-              optionName={object.department_name}
+                key={object.department_id}
+                optionValue={object.department_id}
+                optionName={object.department_name}
               />
             );
           }
@@ -429,9 +517,7 @@ class StudentItem extends React.Component {
             {selected}
             {notSelected}
           </React.Fragment>,
-          document.getElementById(
-            "updateDepartment" + sup.props.student_id
-          )
+          document.getElementById("updateDepartment" + sup.props.student_id)
         );
       }
     });
@@ -482,46 +568,43 @@ class StudentItem extends React.Component {
     let department_id = this.props.department_id;
     let sup = this;
     let data = [
-    {"yearValue":"First Year","yearLevelId":1},
-    {"yearValue":"Second Year","yearLevelId":2},
-    {"yearValue":"Third Year","yearLevelId":3},
-    {"yearValue":"Fourth Year","yearLevelId":4},
-    {"yearValue":"Fifht Year","yearLevelId":5}];
+      { yearValue: "First Year", yearLevelId: 1 },
+      { yearValue: "Second Year", yearLevelId: 2 },
+      { yearValue: "Third Year", yearLevelId: 3 },
+      { yearValue: "Fourth Year", yearLevelId: 4 },
+      { yearValue: "Fifht Year", yearLevelId: 5 }
+    ];
 
-
-
-        var selected = data.map(function(object, index) {
-          if (object.yearLevelId == sup.props.year_level) {
-            return (
-              <OptionItem
-                key={object.yearLevelId}
-                optionValue={object.yearLevelId}
-                optionName={object.yearValue}
-              />
-            );
-          }
-        });
-        var notSelected = data.map(function(object, index) {
-          if (object.yearLevelId != sup.props.year_level) {
-            return (
-              <OptionItem
-              key={object.yearLevelId}
-              optionValue={object.yearLevelId}
-              optionName={object.yearValue}
-            />
-            );
-          }
-        });
-        ReactDOM.render(
-          <React.Fragment>
-            {selected}
-            {notSelected}
-          </React.Fragment>,
-          document.getElementById(
-            "updateYearLevel" + sup.props.student_id
-          )
+    var selected = data.map(function(object, index) {
+      if (object.yearLevelId == sup.props.year_level) {
+        return (
+          <OptionItem
+            key={object.yearLevelId}
+            optionValue={object.yearLevelId}
+            optionName={object.yearValue}
+          />
         );
       }
+    });
+    var notSelected = data.map(function(object, index) {
+      if (object.yearLevelId != sup.props.year_level) {
+        return (
+          <OptionItem
+            key={object.yearLevelId}
+            optionValue={object.yearLevelId}
+            optionName={object.yearValue}
+          />
+        );
+      }
+    });
+    ReactDOM.render(
+      <React.Fragment>
+        {selected}
+        {notSelected}
+      </React.Fragment>,
+      document.getElementById("updateYearLevel" + sup.props.student_id)
+    );
+  }
   removeStudent() {
     let sup = this;
     $.ajax({
@@ -538,25 +621,25 @@ class StudentItem extends React.Component {
     });
   }
 
-  upddateStudentInfo(){
-    let f_name = $("#f_name"+this.props.student_id).val();
-    let l_name = $("#l_name"+this.props.student_id).val();
-    let m_name = $("#m_name"+this.props.student_id).val();
-    let suffix = $("#suffix"+this.props.student_id).val();
-    let parent_name =$("#parent_name"+this.props.student_id).val();
-    let parent_email = $("#parent_email"+this.props.student_id).val();
-    let parent_number = $("#parent_number"+this.props.student_id).val();
-    let department_id = $("#updateDepartment"+this.props.student_id).val();
-    let year_level = $("#updateYearLevel"+this.props.student_id).val();
-    let course_id = $("#updateCourseContainer"+this.props.student_id).val();
-    let student_id  = this.props.student_id;
+  upddateStudentInfo() {
+    let f_name = $("#f_name" + this.props.student_id).val();
+    let l_name = $("#l_name" + this.props.student_id).val();
+    let m_name = $("#m_name" + this.props.student_id).val();
+    let suffix = $("#suffix" + this.props.student_id).val();
+    let parent_name = $("#parent_name" + this.props.student_id).val();
+    let parent_email = $("#parent_email" + this.props.student_id).val();
+    let parent_number = $("#parent_number" + this.props.student_id).val();
+    let department_id = $("#updateDepartment" + this.props.student_id).val();
+    let year_level = $("#updateYearLevel" + this.props.student_id).val();
+    let course_id = $("#updateCourseContainer" + this.props.student_id).val();
+    let student_id = this.props.student_id;
     let sup = this;
 
     $.ajax({
       url: "students/function.php",
       method: "POST",
       data: {
-        requestType:"updateStudent",
+        requestType: "updateStudent",
         department_id: department_id,
         course_id: course_id,
         year_level: year_level,
@@ -573,7 +656,7 @@ class StudentItem extends React.Component {
         console.log(data);
         fetchStudents();
         sup.extendState();
-        $("#updateStudentModal" + sup.props.student_id).modal('hide');
+        $("#updateStudentModal" + sup.props.student_id).modal("hide");
       }
     });
   }
@@ -716,7 +799,7 @@ class StudentItem extends React.Component {
                       <input
                         type="text"
                         class="form-control"
-                        id={"l_name"+this.props.student_id}
+                        id={"l_name" + this.props.student_id}
                         defaultValue={this.props.l_name}
                       />
                     </div>
@@ -727,7 +810,7 @@ class StudentItem extends React.Component {
                       <input
                         type="text"
                         className="form-control"
-                        id={"f_name"+this.props.student_id}
+                        id={"f_name" + this.props.student_id}
                         defaultValue={this.props.f_name}
                       />
                     </div>
@@ -738,7 +821,7 @@ class StudentItem extends React.Component {
                       <input
                         type="text"
                         className="form-control"
-                        id={"m_name"+this.props.student_id}
+                        id={"m_name" + this.props.student_id}
                         defaultValue={this.props.m_name}
                       />
                     </div>
@@ -749,90 +832,92 @@ class StudentItem extends React.Component {
                       <input
                         type="text"
                         className="form-control"
-                        id={"suffix"+this.props.student_id}
+                        id={"suffix" + this.props.student_id}
                         defaultValue={this.props.suffix}
                       />
                     </div>
                   </div>
                 </div>
                 <div className="row">
-                  <div className = "col-sm-12">
-                  <div className="input-group mb-3">
-                    <select
-                      id={"updateDepartment" + this.state.student_id}
-                      className="custom-select"
-                    >
-                      {/* choose department container */}
-                    </select>
-                    <div className="input-group-append">
-                      <label
-                        className="input-group-text"
-                        for="inputGroupSelect02"
+                  <div className="col-sm-12">
+                    <div className="input-group mb-3">
+                      <select
+                        id={"updateDepartment" + this.state.student_id}
+                        className="custom-select"
                       >
-                        Department
-                      </label>
+                        {/* choose department container */}
+                      </select>
+                      <div className="input-group-append">
+                        <label
+                          className="input-group-text"
+                          for="inputGroupSelect02"
+                        >
+                          Department
+                        </label>
+                      </div>
                     </div>
                   </div>
-                  </div>
-                  <div className = "col-6">
-                  <div className="input-group mb-3">
-                    <select
-                      id={"updateCourseContainer" + this.state.student_id}
-                      className="custom-select"
-                    >
-                      {/* choose Course container */}
-                    </select>
-                    <div className="input-group-append">
-                      <label
-                        className="input-group-text"
-                        for="inputGroupSelect02"
+                  <div className="col-6">
+                    <div className="input-group mb-3">
+                      <select
+                        id={"updateCourseContainer" + this.state.student_id}
+                        className="custom-select"
                       >
-                        Course
-                      </label>
+                        {/* choose Course container */}
+                      </select>
+                      <div className="input-group-append">
+                        <label
+                          className="input-group-text"
+                          for="inputGroupSelect02"
+                        >
+                          Course
+                        </label>
+                      </div>
                     </div>
                   </div>
-                  </div>
-                  <div className = "col-6">
-                  <div className="input-group mb-3">
-                    <select
-                      id={"updateYearLevel" + this.state.student_id}
-                      className="custom-select"
-                    >
-                      {/* choose year level container */}
-                    </select>
-                    <div className="input-group-append">
-                      <label
-                        className="input-group-text"
-                        for="inputGroupSelect02"
+                  <div className="col-6">
+                    <div className="input-group mb-3">
+                      <select
+                        id={"updateYearLevel" + this.state.student_id}
+                        className="custom-select"
                       >
-                        Year Level
-                      </label>
+                        {/* choose year level container */}
+                      </select>
+                      <div className="input-group-append">
+                        <label
+                          className="input-group-text"
+                          for="inputGroupSelect02"
+                        >
+                          Year Level
+                        </label>
+                      </div>
                     </div>
-                  </div>
                   </div>
                 </div>
                 <div className="row">
-                <h3 className="text-info">Parent's Information</h3>
+                  <h3 className="text-info">Parent's Information</h3>
                 </div>
-                <div className = "row">
-                <div className="col-12">
+                <div className="row">
+                  <div className="col-12">
                     <div class="form-group">
                       <small className="text-muted">Parents name</small>
                       <input
                         type="text"
                         class="form-control"
-                        id={"parent_name"+this.props.student_id}
+                        id={"parent_name" + this.props.student_id}
                         defaultValue={this.props.parent_name}
                       />
                     </div>
                   </div>
                   <div className="col-6">
                     <div class="form-group">
-                      <small className="text-muted">Parents Contact Number</small>
+                      <small className="text-muted">
+                        Parents Contact Number
+                      </small>
                       <input
                         type="text"
                         class="form-control"
-                        id={"parent_number"+this.props.student_id}
+                        id={"parent_number" + this.props.student_id}
                         defaultValue={this.props.parent_number}
                       />
                     </div>
@@ -843,7 +928,7 @@ class StudentItem extends React.Component {
                       <input
                         type="text"
                         class="form-control"
-                        id={"parent_email"+this.props.student_id}
+                        id={"parent_email" + this.props.student_id}
                         defaultValue={this.props.parent_email}
                       />
                     </div>
@@ -851,7 +936,7 @@ class StudentItem extends React.Component {
                 </div>
                 {/* end modal body */}
               </div>
-              
+
               <div className="modal-footer">
                 <button
                   type="button"
@@ -860,7 +945,11 @@ class StudentItem extends React.Component {
                 >
                   Close
                 </button>
-                <button type="button" onClick = {this.upddateStudentInfo.bind(this)} className="btn btn-primary">
+                <button
+                  type="button"
+                  onClick={this.upddateStudentInfo.bind(this)}
+                  className="btn btn-primary"
+                >
                   Save changes
                 </button>
               </div>
