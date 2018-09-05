@@ -417,8 +417,6 @@ class StudentSetAbsent extends React.Component {
       });
     }
   
-
-
   getWarningLevel(){
     let sup = this;
     let absentHours = this.state.absentValue;

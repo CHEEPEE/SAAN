@@ -136,6 +136,8 @@ class StudentItemRecords extends React.Component {
     });
   }
 
+
+
   componentDidMount() {
     this.getStudentRecords();
   }
@@ -302,9 +304,41 @@ class StudentItemRecords extends React.Component {
 
 class StudentWarningBySubject extends React.Component {
   state = {
-    warningLevel:this.props.warning_level
+    warningLevel:this.props.warning_level,
+    absent_value:0
   };
 
+  getAbsentHours(){
+    let sup = this;
+    let student_id = this.props.student_id;
+    
+    $.ajax({
+      type: "post",
+      url: "students/function.php",
+      data: {
+        requestType: "getStudentAbsentHoursBySubject",
+        student_id: student_id,
+        subject_id:sup.props.subject_id
+      },
+      success: function(data) {
+        console.log(data);
+        var absent_value = 0;
+        var listItem = JSON.parse(data).map(
+          function(object,index){
+            absent_value += parseFloat(object.absent_value);
+          }
+        );
+       sup.setState({
+        absent_value:absent_value
+       });
+       console.log(sup.state.absent_value);
+      }
+    });
+  }
+  
+  componentDidMount(){
+    this.getAbsentHours();
+  }
 
   render() {
     return (
@@ -316,8 +350,14 @@ class StudentWarningBySubject extends React.Component {
             </div>
             <div className="row text-info">{this.state.warningLevel}</div>
           </div>
+          <div className="col">
+            <div className="row">
+              <small>Absents</small>
+            </div>
+            <div className="row text-info">{this.state.absent_value/1.5}</div>
+          </div>
         </div>
-        <div className="row">
+        <div className="row mt-1">
           <div className="col">
             <div className="row">
               <small>Teacher Name</small>
