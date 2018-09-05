@@ -42,7 +42,7 @@
             <?php echo $_SESSION["account_name"]?>
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item"  href="#">Manage Accout</a>
+            <a class="dropdown-item" onClick = "getSecretaryAccount();">Manage Accout</a>
 
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="logout.php">Log out</a>
@@ -52,6 +52,9 @@
     </form>
   </div>
 </nav>
+<div class = "container-fluid h-100">
+
+
     <div class = "row h-100 mt-4 pt-5 pl-3">
        
     <div class = "col-sm-4 h-100 pt-3 shadow bg-white" id = "sideNavRoot">
@@ -61,6 +64,12 @@
         Main Root
     </div>
 </div>
+</div>
 </body>
+<script>
+const global_userId = "<?php echo $_SESSION["accout_id"]; ?>";
+const global_deptId = "<?php echo $_SESSION['dept_id']?>";
+</script>
 <script type="text/babel" src="index.js"></script>
+<script type="text/babel" src="students.js"></script>
 </html>

@@ -1,6 +1,8 @@
 ReactDOM.render(
   <React.Fragment>
     <div className="row w-100 mt-3">
+      <div className = "col-sm-12" id = "forButtons">
+      </div>
       <div className="form-group w-100 pl-3 pr-3">
         <label for="exampleInputEmail1" className="text-info">
           Teacher Name
@@ -399,7 +401,7 @@ class StudentSetAbsent extends React.Component {
     let absent_value = this.state.absentValue;
     let student_id = this.props.props.id;
     let subject_id = this.props.subject_id;
-    if(this.state.absentValue >= 4.5){
+    
       $.ajax({
         url: "sidenav/function.php",
         method: "POST",
@@ -414,7 +416,7 @@ class StudentSetAbsent extends React.Component {
         }
       });
     }
-  }
+  
 
 
   getWarningLevel(){
@@ -603,4 +605,133 @@ class AbsentsItem extends React.Component {
   );
   }
 }
+
+
+
+class UpdateSecretaryAccount extends React.Component {
+  state = {
+    showPassword:"password"
+  };
+
+  updateAccountDetails(){
+    let account_name = $("#account_name").val();
+    let username = $("#update_username").val();
+    let password = $("#update_password").val();
+   
+    $.ajax({
+      url: "functions/updateAccount.php",
+      method: "POST",
+      data: {
+        requestType:"updateAccount",
+        account_id:global_userId,
+        account_name: account_name,
+        password: password,
+        username: username,
+      },
+      success: function(data) {
+        console.log(data);
+    let detailsContainer = document.querySelector("#mainContainerRoot");
+    ReactDOM.render(
+      <React.Fragment>
+        Account Updated Succesfully
+      </React.Fragment>,
+    detailsContainer);
+        getSecretaryAccounts();
+      }
+    });
+  }
+
+  showPassword(){
+    this.setState({
+      showPassword:this.state.showPassword == "password"?"text":"password"
+    })
+  }
+
+  render() {
+    return (
+      <div className="container w-75 m-5 rounded bg-white shadow p-5">
+        <div className="row mb-2">
+          <div className="col">
+            <h5>Update Account</h5>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-sm-12">
+            <div className="form-group w-100">
+              <input
+                id="account_name"
+                type="text"
+                defaultValue = {this.props.objectData.account_name}
+                className="form-control"
+                aria-describedby="emailHelp"
+                placeholder="Login Username"
+              />
+            </div>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-sm-12">
+            <div className="form-group w-100">
+              <input
+                id="update_username"
+                type="text"
+                defaultValue = {this.props.objectData.username}
+                className="form-control"
+                aria-describedby="emailHelp"
+                placeholder="Login Username"
+              />
+            </div>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-sm-12">
+            <div className="form-group w-100">
+              <input
+                id="update_password"
+                type={this.state.showPassword}
+                defaultValue = {this.props.objectData.password}
+                className="form-control"
+                aria-describedby="emailHelp"
+                placeholder="Login Username"
+              />
+           
+            </div>
+            <div className="form-group form-check">
+              <input onChange = {this.showPassword.bind(this)} type="checkbox" class="form-check-input" id="exampleCheck1"/>
+              <label className="form-check-label" for="exampleCheck1">Show Password</label>
+            </div>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col">
+          <button onClick = {this.updateAccountDetails.bind(this)} type="button" class="btn w-100 btn-info">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
  
+
+function getSecretaryAccount(){
+  $.ajax({
+    type: "Post",
+    url: "functions/getSecreteryAccount.php",
+    data:{userId:global_userId},
+    success: function(data) {
+      console.log(data);
+      var listItem = JSON.parse(data).map(object => (
+        <UpdateSecretaryAccount
+          key={object.userid}
+          objectData = {object}
+          account_name={object.account_name}
+          department_name={object.department_name}
+        />
+      ));
+      ReactDOM.render(
+        <React.Fragment>{listItem}</React.Fragment>,
+        document.getElementById("mainContainerRoot")
+      );
+    }
+  });
+}

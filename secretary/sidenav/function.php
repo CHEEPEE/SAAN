@@ -158,7 +158,9 @@ if ($requestType == "checkWarnings"){
 }
 else{
         if(addWarning($student_id,$subject_id,$absent_value)){
+            if (getWarningLevel($absent_value)!=0){
             echo sendWarning($student_id,$subject_id,$absent_value);
+          }
         }
     }
 }
@@ -237,6 +239,8 @@ function getWarningLevel($absentHours){
         return 3;
     }else if ($absentHours >= 15){
         return 4;
+    }else{
+        return 0;
     }
 }
 
@@ -246,7 +250,7 @@ function sendWarning($student_id,$subject_id,$absent){
    
    if(updateEmailLevel($student_id,$subject_id,$absent)){
 
-        echo itexmo(getStudentCredentials($student_id)['parent_number'],textMessage($student_id),"TR-SACAU065476_CA5JZ");
+        // echo itexmo(getStudentCredentials($student_id)['parent_number'],textMessage($student_id),"TR-SACAU065476_CA5JZ");
         return sendMail($student_id);
    }
 }
