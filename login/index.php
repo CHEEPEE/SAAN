@@ -84,7 +84,11 @@
 						<button name = "login_btn"  class="login100-form-btn">
 							Login
 						</button>
+						
 					</div>
+					<br>
+				
+					<center><a onClick = "prompRecovery()" href = "#">Forgot Password?</a></center>
 
 				</form>
 			</div>
@@ -110,6 +114,32 @@
 	<script src="vendor/countdowntime/countdowntime.js"></script>
 <!--===============================================================================================-->
 	<script src="js/main.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" ></script>
+	<script>
+	function prompRecovery(){
+		var email = prompt("Please enter your Recovery Email", "");
+		console.log(email);
+		if (email != null) {
+			$.ajax({
+			url: "recoveryEmail.php",
+			method: "POST",
+			data: {
+			email:email
+			},
+			success: function(data) {
+				console.log(data);
+				if (data == "sent Success"){
+					alert("Your Password Has Been Sent to your Email");
+				}else{
+					alert(data);
+				}
+			}
+			});
+}
+}
+
+	</script>
+	
 
 </body>
 </html>

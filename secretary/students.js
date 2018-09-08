@@ -29,6 +29,9 @@ class StudentsContainer extends React.Component {
     let student = $("#searchStudent").val();
     fetchStudents(global_deptId, "na", "na", student);
   }
+  componentDidMount(){
+    this.getStudents();
+  }
   render() {
     return (
       <div className="container bg-white p-5 shadow">
@@ -135,7 +138,10 @@ class StudentItemRecords extends React.Component {
       }
     });
   }
-
+  printDetails(){
+    var win = window.open('printreport.php?student_id='+this.props.student_id,"_blank");
+    win.focus();
+  }
 
 
   componentDidMount() {
@@ -290,7 +296,7 @@ class StudentItemRecords extends React.Component {
                 >
                   Close
                 </button>
-                <button type="button" className="btn btn-primary">
+                <button type="button" onClick = {this.printDetails.bind(this)} className="btn btn-primary">
                   Print Details
                 </button>
               </div>

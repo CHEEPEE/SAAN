@@ -367,6 +367,22 @@ class StudentSetAbsent extends React.Component {
     absentNumber:0
    }
   
+   confirmAbsent(){
+     if($("#absentValue").val() != 0){
+      if ($("#absentDate").val()!=""){
+        if(confirm("Confirm Absent?")){
+          this.saveAbsent();
+        }
+       }else{
+        if(confirm("Contineu with out Date?")){
+          this.saveAbsent();
+        }
+       }
+     }else{
+        alert("input value first");
+     }
+   }
+
   saveAbsent() {
    
     let absent_date = $("#absentDate").val();
@@ -391,7 +407,7 @@ class StudentSetAbsent extends React.Component {
       success: function(data) {
       console.log(data);
       sup.fetchAbsents();
-     
+      $("#absentValue").val("");
       }
     });
   }
@@ -528,17 +544,19 @@ class StudentSetAbsent extends React.Component {
       <div className = "col">
         <div class="input-group mb-3">
           <div class="input-group-prepend">
-            <label class="input-group-text" for="inputGroupSelect01">Type</label>
+            <label class="input-group-text" for="inputGroupSelect01">Absent Hours</label>
           </div>
-          <select class="custom-select" id="absentValue">
+          <input type="number" class="form-control" id ="absentValue"/>
+         
+          {/* <select class="custom-select" id="absentValue">
             <option selected>Choose</option>
             <option value="1.5">Absent</option>
             <option value="0.5">Late</option>
-          </select>
+          </select> */}
         </div>
       </div>
       <div className = "col">
-      <button type="button" onClick = {this.saveAbsent.bind(this)} class="btn btn-info">Confirm</button>
+      <button type="button" onClick = {this.confirmAbsent.bind(this)} class="btn btn-info">Confirm</button>
       </div>
       </div>
       <div className = "row">

@@ -1,31 +1,9 @@
 <?php
 include '../Database.php';
 
-$department_id = mysqli_real_escape_string($connect,$_POST['department_id']);
-$year_level = mysqli_real_escape_string($connect,$_POST['year_level']);
-$course_id = mysqli_real_escape_string($connect,$_POST['course_id']);
-$search =  mysqli_real_escape_string($connect,$_POST['search']);
-$whereQuery = "";
+$student_id = mysqli_real_escape_string($connect,$_POST['student_id']);
 
-if(is_numeric($department_id) || is_numeric($year_level)|| is_numeric($course_id)){
-  $whereQuery =$whereQuery. " where ";
- //if deparment is not null
-  $whereQuery = $whereQuery. (is_numeric($department_id)? "department_id = $department_id " : " ")
-  //if department and yearlevel is not null
-  .(is_numeric($department_id) && is_numeric($year_level)? " and ":" ") 
-  //if year level is not null
-  .(is_numeric($year_level)? "year_level = $year_level ":" ")
-
-  .(is_numeric($year_level) && is_numeric($course_id)? " and ":" ") 
-
-  .(is_numeric($course_id)? " course_id = $course_id ":" ")
-  
-  ." and (student_id like '%$search%' or f_name like '%$search%' or l_name like '%$search%' or parent_name like '%$search%' or parent_number like '%$search%') order by l_name";
-}else{
-  $whereQuery = "where student_id like '%$search%' or f_name like '%$search%' or l_name like '%$search%' or parent_name like '%$search%' or parent_number like '%$search%' order by l_name";
-}
-
-$sql = "select * from students $whereQuery";
+$sql = "select * from students where student_id = $student_id";
 // echo $sql;
 $result = $connect->query($sql);
 $arrayData = array();
@@ -109,4 +87,3 @@ function getDepartmentName($department_id){
     
 
 ?>
-

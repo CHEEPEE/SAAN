@@ -38,9 +38,6 @@
             <?php echo $_SESSION["account_name"]?>
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item"  href="#">Manage Accout</a>
-
-            <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="logout.php">Log out</a>
             </div>
         </li>
