@@ -250,8 +250,8 @@ function sendWarning($student_id,$subject_id,$absent){
    
    if(updateEmailLevel($student_id,$subject_id,$absent)){
 
-        // echo itexmo(getStudentCredentials($student_id)['parent_number'],textMessage($student_id),"TR-SACAU065476_CA5JZ");
-        return sendMail($student_id);
+        // echo itexmo(getStudentCredentials($student_id)['parent_number'],textMessage($student_id,$subject_id,$absent),"TR-SACAU065476_CA5JZ");
+        return sendMail($student_id,$subject_id,$absent);
    }
 }
 
@@ -283,17 +283,34 @@ function itexmo($number,$message,$apicode){
     return file_get_contents($url, false, $context);
 }
 
-function textMessage($student_id){
-    return getStudentCredentials($student_id)['f_name'];
-}
-
-function sendMail($student_id){
+function textMessage($student_id,$subject_id,$absent){
+    $message = "";
     $studentCred = getStudentCredentials($student_id);
     $parentName = $studentCred['parent_name'];
     $studentName = $studentCred['l_name'].", ".$studentCred['f_name']. " ". $studentCred['m_name'];
+    $warningLevel = getWarningDetails($student_id,$subject_id)['warning_level'];
+    $subject_code = getSubjectCredentials($subject_id)['subject_code'];
+    $subject_des = getSubjectCredentials($subject_id)['subject_des'];
+    $teacher = getTeacherDetails(getSubjectCredentials($subject_id)['teacher_id'])['teacher_name'];
+    $absentDays = floor($absent/1.5);
+    
+   $message = "$parentName $absentDays $subject_code $subject_des $teacher
+   ";
+   echo substr($message,0,90);
+   return substr($message,0,90);
+}
 
+function sendMail($student_id,$subject_id,$absent){
+    $studentCred = getStudentCredentials($student_id);
+    $parentName = $studentCred['parent_name'];
+    $studentName = $studentCred['l_name'].", ".$studentCred['f_name']. " ". $studentCred['m_name'];
+    $warningLevel = getWarningDetails($student_id,$subject_id)['warning_level'];
+    $subject_code = getSubjectCredentials($subject_id)['subject_code'];
+    $subject_des = getSubjectCredentials($subject_id)['subject_des'];
+    $teacher = getTeacherDetails(getSubjectCredentials($subject_id)['teacher_id'])['teacher_name'];
     $to = $studentCred['parent_email'];
-    $subject = "HTML email";
+    $absentDays = floor($absent/1.5);
+    $subject = "Warning Notice";
 
     $message = "
     <html>
@@ -303,10 +320,23 @@ function sendMail($student_id){
     <body>
     <p>Dear $parentName,
 
-    This is to inform you that your son/daugther $studentName have accumulated the following absences in this subject
+    This is to inform you that your son/daugther $studentName have accumulated the following absences in this subject<br>
+    <br>
    
     Do Come and see me as soon as possible to discuss this matter. Thank you.
     </p>
+
+    <br>
+    <p>Details:
+
+    Absents: $absentDays ($absent hours)<br>
+    Warning level: $warningLevel<br>
+    Subject Code: $subject_code<br>
+    Subject Description: $subject_des<br>
+    Teacher :$teacher<br>
+
+    </p>
+
    
     </body>
     </html>
@@ -354,4 +384,33 @@ function getDepartmentName($department_id){
       }
     }
 }
+
+function getWarningDetails($student_id,$subject_id){
+    include '../Database.php';
+    $sql = "select * from warnings where student_id = $student_id and subject_id = $subject_id";
+    $result = $connect->query($sql);
+    if ($result->num_rows >0) {
+      // code...
+      while ($row = $result->fetch_assoc()) {
+        // code...
+        return $row;
+      }
+    }
+}
+
+
+function getSubjectCredentials($subject_id){
+    include '../Database.php';
+    $sql = "select * from subjects where subject_id = $subject_id";
+    $result = $connect->query($sql);
+    if ($result->num_rows >0) {
+      // code...
+      while ($row = $result->fetch_assoc()) {
+        // code...
+        return $row;
+      }
+    }
+}
+
+
 ?>

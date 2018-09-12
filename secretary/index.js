@@ -428,7 +428,14 @@ class StudentSetAbsent extends React.Component {
           absent_value:absent_value
         },
         success: function(data) {
-          console.log("check Warning "+ data);
+          console.log(data);
+          if(data.includes("sent") && data.includes("0")){
+            alert("Email and SMS sent");
+          }else if(data.includes("sent")){
+            alert("Email Sent");
+          }else if(data.includes("0") ){
+            alert("text sent");
+          }
         }
       });
     }

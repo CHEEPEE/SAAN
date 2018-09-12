@@ -235,7 +235,7 @@ class DepartmentItem extends React.Component {
               <h5>{this.props.departmentname}</h5>
             </div>
             <div>
-              <button
+              {/* <button
                 type="button"
                 class="btn btn-outline-info mr-3"
                 data-toggle="modal"
@@ -243,9 +243,9 @@ class DepartmentItem extends React.Component {
                   "#updateDepartmentModal" + this.props.department_id
                 }
               >
-               {/* update department button */}
+               
                 Update
-              </button>
+              </button> */}
               <button type="button" class="btn btn-outline-danger"
               data-toggle="modal"
               data-target={
@@ -468,7 +468,7 @@ class CourseItem extends React.Component {
             <div className="col">{this.props.coursename}</div>
             <div className="col d-flex flex-row-reverse bd-highlight">
               <div>
-                <button
+                {/* <button
                   type="button"
                   class="btn btn-outline-info mr-3"
                   data-toggle="modal"
@@ -479,7 +479,7 @@ class CourseItem extends React.Component {
                   }
                 >
                   Update
-                </button>
+                </button> */}
                 <button
                   type="button"
                   class="btn btn-outline-danger"
