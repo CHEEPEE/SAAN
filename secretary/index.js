@@ -734,6 +734,64 @@ class UpdateSecretaryAccount extends React.Component {
     );
   }
 }
+
+class SmsLogs extends React.Component {
+  state = { 
+
+   }
+   componentDidMount(){
+    $.ajax({
+      type: "post",
+      url: "sidenav/function.php",
+      data: {
+        requestType: "getSmsLogs",
+      },
+      success: function(data) {
+        console.log(data);
+        var listItem = JSON.parse(data).map(object => (
+          <SmsLogsItem
+            id={object.smslog_id}
+            key={object.smslog_id}
+            parent_name={object.parent_name}
+            parent_number={object.parent_number}
+            time_date = {object.time}
+          />
+        ));
+        ReactDOM.render(
+          <React.Fragment>{listItem}</React.Fragment>,
+          document.getElementById("smslogsContainer")
+        );
+      }
+    });
+   }
+  render() { 
+    return ( 
+      <div className = "list-group" id = "smslogsContainer">
+      
+      </div>
+     );
+  }
+}
+
+class SmsLogsItem extends React.Component {
+  state = {  }
+  render() { 
+    return ( 
+      <div className ="list-group-item">
+        <div className = "col">
+          {this.props.parent_name}
+        </div>
+        <div className = "col">
+          {this.props.parent_number}
+        </div>
+        <div className = "col">
+          {this.props.time_date}
+        </div>
+      </div>
+     );
+  }
+}
+ 
  
 
 function getSecretaryAccount(){
@@ -757,4 +815,11 @@ function getSecretaryAccount(){
       );
     }
   });
+}
+
+function getSmsLogs(){
+  ReactDOM.render(
+    <SmsLogs/>,
+    document.getElementById("mainContainerRoot")
+  );
 }

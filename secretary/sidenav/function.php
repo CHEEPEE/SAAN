@@ -183,10 +183,40 @@ if ($requestType == "getWarningLevels"){
 
         }
     // code...
-    }
-    
+    } 
 }
 
+if ($requestType == "getSmsLogs"){
+    session_start();
+    $department_id = $_SESSION['dept_id'];
+    include '../Database.php';
+   
+    $sql = "select * from smslogs where dept_id = $department_id";
+    $result = $connect->query($sql);
+    $arrayData = array();
+    class myObject
+    {
+        
+    }
+    if ($result->num_rows >0) {
+    // code...
+    while ($row = $result->fetch_assoc()) {
+        // code...
+
+        $smslogs = new myObject();
+
+        $smslogs->parent_name =getStudentCredentials($row['student_id'])['parent_name'];
+        $smslogs->parent_number = getStudentCredentials($row['student_id'])['parent_number'];
+        $smslogs->time = $row['time_date'];
+        $smslogs->smslog_id = $row['sms_id'];
+
+        
+        $arrayData[]=$smslogs;        
+    }
+}
+
+echo json_encode($arrayData);
+}
 function addWarning($student_id,$subject_id,$absent){
     include '../Database.php';
     session_start(); 
@@ -247,12 +277,34 @@ function getWarningLevel($absentHours){
 
 
 function sendWarning($student_id,$subject_id,$absent){
-   
+    session_start();
+    $department_id = $_SESSION['dept_id'];
    if(updateEmailLevel($student_id,$subject_id,$absent)){
 
-        // echo itexmo(getStudentCredentials($student_id)['parent_number'],textMessage($student_id,$subject_id,$absent),"TR-SACAU065476_CA5JZ");
+        if(itexmo(getStudentCredentials($student_id)['parent_number'],textMessage($student_id,$subject_id,$absent),"TR-SACAU065476_CA5JZ")==0){
+            saveSMSLog($student_id,$department_id);
+        }
+
         return sendMail($student_id,$subject_id,$absent);
    }
+}
+
+function saveSMSLog($student_id,$department_id){
+    $dateTime = getTime();
+    include '../Database.php';
+    $query = "INSERT INTO smslogs(student_id,dept_id,time_date
+    ) 
+    VALUES ($student_id,$department_id,'$dateTime')";
+    if(mysqli_query($connect,$query)) 
+    {
+        echo 'save sms log success';
+    }else {
+        echo "Error: " . $query . "<br>" . $connect->error;
+    }
+}
+
+function getTime(){
+  return  date("h:i:sa")." ".date("Y/m/d");
 }
 
 function getTeacherDetails($teacherId){

@@ -41,9 +41,11 @@
             <a class="nav-link dropdown-toggle text-white" href="#" id = "account-name" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <?php echo $_SESSION["account_name"]?>
             </a>
+            
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
             <a class="dropdown-item" onClick = "getSecretaryAccount();">Manage Accout</a>
-
+            <a class="dropdown-item" onClick = "getSmsLogs();">Sms Logs</a>
+           
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="logout.php">Log out</a>
             </div>
