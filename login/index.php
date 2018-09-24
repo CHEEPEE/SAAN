@@ -47,21 +47,20 @@
 					$_SESSION["accout_id"] = $row['userid'];
 					$_SESSION["account_name"] = $row['account_name'];
 					$_SESSION["account_type"] = $row['account_type'];
+					$_SESSION["dept_id"] = "2";
 				}
 				else if($row['account_type']=="dept_sec"){
 					header("location:../secretary/");
 					$_SESSION["accout_id"] = $row['userid'];
 					$_SESSION["account_name"] = $row['account_name'];
 					$_SESSION["account_type"] = $row['account_type'];
-					$_SESSION["dept_id"] = $row['department_id'];
+					$_SESSION["dept_id"] = "2";
 				}
 			}
 		}else {
 			echo "login failed";
 		}
-
 	} ?>
-
 	<div class="limiter">
 		<div class="container-login100" style="background-image: url('images/bg-01.jpg');">
 			<div class="wrap-login100 p-t-30 p-b-50">

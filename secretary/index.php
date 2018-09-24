@@ -11,14 +11,8 @@
     if($_SESSION["account_type"] == null){
         header("location:../wedontdothathere.php");
     }
-    if($_SESSION["account_type"] != "dept_sec"){
-        header("location:../wedontdothathere.php");
-    }
-    
     include 'functions/function.php';
-
     ?>
-
     <style>
         html{
             height:100%; 
@@ -27,13 +21,18 @@
 </head>
 <body class = "h-100 bg-light">
 <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
-  <a class="navbar-brand text-white" href="">SAC Automated Attendance Notification <br> <small><?php echo getDepartmentName($_SESSION['dept_id']); ?></small></a>
+  <a class="navbar-brand text-white" href="">SAC Automated Attendance Notification <br> 
+  <!-- <small><?php echo getDepartmentName($_SESSION['dept_id']); ?></small> -->
+  </a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
 
   <div class="ml-5 collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
+    <li class="nav-item active">
+        <a class="nav-link" href="../admin">Manage Details<span class="sr-only">(current)</span></a>
+      </li>
     </ul>
     <form class="form-inline my-2 my-lg-0 mr-3">
       <ul class="navbar-nav mr-auto mr-3">

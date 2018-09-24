@@ -3,6 +3,7 @@ function manageAccoutRoot() {
   ReactDOM.render(<ManageAccout />, root);
 }
 
+
 function getSecretaryAccounts() {
   $.ajax({
     type: "Post",
@@ -58,7 +59,7 @@ class ManageAccout extends React.Component {
 
   componentDidMount() {
     this.chooseDepartment();
-    this.getSecretaryAccounts();
+    // this.getSecretaryAccounts();
   }
 
   chageStateAddAccountLayout() {
@@ -99,13 +100,13 @@ class ManageAccout extends React.Component {
         {/* first column */}
         <div className="col">
           <div className="row">
-            <button
+            {/* <button
               type="button"
               onClick={this.chageStateAddAccountLayout.bind(this)}
               className="btn btn-outline-primary"
             >
               Add Secretary Account
-            </button>
+            </button> */}
           </div>
           <div
             className={
@@ -168,9 +169,9 @@ class ManageAccout extends React.Component {
             </button>
           </div>
 
-          <div className="row mt-3">
+          {/* <div className="row mt-3">
             <h3>Secretary Accounts</h3>
-          </div>
+          </div> */}
           <div id="secretaryAccountContainer" className="row" />
 
           <div className="row mt-3">
@@ -188,6 +189,7 @@ class ManageAccout extends React.Component {
     );
   }
 }
+
 
 class DepartmentOptions extends React.Component {
   render() {
@@ -564,3 +566,5 @@ class MyAccount extends React.Component {
     );
   }
 }
+
+manageAccoutRoot();

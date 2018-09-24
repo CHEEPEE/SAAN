@@ -11,9 +11,6 @@
     if($_SESSION["account_type"] == null){
         header("location:../wedontdothathere.php");
     }
-    if($_SESSION["account_type"] != "superadmin"){
-        header("location:../wedontdothathere.php");
-    }
     ?>
     <style>
         html{
@@ -27,9 +24,11 @@
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
-
   <div class="ml-5 collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
+    <li class="nav-item active">
+        <a class="nav-link" href="../secretary">Manage Absences<span class="sr-only">(current)</span></a>
+      </li>
     </ul>
     <form class="form-inline my-2 my-lg-0 mr-3">
       <ul class="navbar-nav mr-auto mr-3">
@@ -50,8 +49,8 @@
     </div>
     <div class = "col-sm-2 bg-white mt-2 shadow position-fixed h-100">
      <div class="nav m-3 flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-      <div class="mt-3 font-weight-bold nav-link active" id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home" role="tab" aria-controls="v-pills-home" aria-selected="true" onClick = "manageDepartmentRoot()"> Department</div>
-      <div class="mt-3 font-weight-bold nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="false" onClick = "manageAccoutRoot()"> Accounts</div>
+      <!-- <div class="mt-3 font-weight-bold nav-link active" id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home" role="tab" aria-controls="v-pills-home" aria-selected="true" onClick = "manageDepartmentRoot()"> Department</div> -->
+      <div class="mt-3 font-weight-bold nav-link active" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="false" onClick = "manageAccoutRoot()"> Accounts</div>
       <div class="mt-3 font-weight-bold nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false" onClick = "manageStudents()"> Students</div>
       <div class="mt-3 font-weight-bold nav-link" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false" onClick = "manageTeachers()"> Teachers</div>
     </div>

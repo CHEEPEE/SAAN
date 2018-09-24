@@ -115,8 +115,6 @@ class ManageDepartment extends React.Component {
 function manageDepartmentRoot() {
   ReactDOM.render(<ManageDepartment />, root);
 }
-manageDepartmentRoot();
-
 class DepartmentItem extends React.Component {
   constructor(props) {
     super(props);
