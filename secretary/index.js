@@ -512,6 +512,7 @@ class StudentSetAbsent extends React.Component {
   }
   componentDidMount(){
     this.fetchAbsents();
+    document.getElementById('absentDate').min = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split("T")[0];
   }
   render() { 
     return ( 
@@ -545,7 +546,7 @@ class StudentSetAbsent extends React.Component {
           <span class="input-group-text">Set Absent Date</span>
          
         </div>
-        <input type="date" class="form-control" id ="absentDate"/>
+        <input type="date" class="form-control" min="0" id ="absentDate"/>
       </div>
       </div>
       <div className = "col">

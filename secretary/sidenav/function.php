@@ -280,11 +280,11 @@ function sendWarning($student_id,$subject_id,$absent){
     session_start();
     $department_id = $_SESSION['dept_id'];
    if(updateEmailLevel($student_id,$subject_id,$absent)){
-
-        if(itexmo(getStudentCredentials($student_id)['parent_number'],textMessage($student_id,$subject_id,$absent),"TR-SACAU065476_CA5JZ")==0){
+        $smsStatus = itexmo(getStudentCredentials($student_id)['parent_number'],textMessage($student_id,$subject_id,$absent),"TR-SACAU065476_CA5JZ");
+        echo $smsStatus;
+        if($smsStatus==0){
             saveSMSLog($student_id,$department_id);
         }
-
         return sendMail($student_id,$subject_id,$absent);
    }
 }
@@ -348,7 +348,6 @@ function textMessage($student_id,$subject_id,$absent){
     
    $message = "$parentName $absentDays $subject_code $subject_des $teacher
    ";
-   echo substr($message,0,90);
    return substr($message,0,90);
 }
 
