@@ -280,7 +280,7 @@ function sendWarning($student_id,$subject_id,$absent){
     session_start();
     $department_id = $_SESSION['dept_id'];
    if(updateEmailLevel($student_id,$subject_id,$absent)){
-        $smsStatus = itexmo(getStudentCredentials($student_id)['parent_number'],textMessage($student_id,$subject_id,$absent),"TR-SACAU065476_CA5JZ");
+        $smsStatus = itexmo(getStudentCredentials($student_id)['parent_number'],textMessage($student_id,$subject_id,$absent),"TR-ROLLY931239_LDH7Z");
         echo $smsStatus;
         if($smsStatus==0){
             saveSMSLog($student_id,$department_id);
